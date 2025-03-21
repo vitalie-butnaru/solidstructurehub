@@ -1,7 +1,12 @@
 
 import { ArrowDown } from 'lucide-react';
+import { SiteData } from '@/contexts/SiteContext';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  data: SiteData['hero'];
+}
+
+const HeroSection = ({ data }: HeroSectionProps) => {
   const scrollToServices = () => {
     const servicesSection = document.getElementById('servicii');
     if (servicesSection) {
@@ -14,8 +19,11 @@ const HeroSection = () => {
       {/* Background with Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-construction-900/90 to-construction-800/90 z-0">
         <div 
-          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1531834685032-c34bf0d84c77')] bg-cover bg-center bg-no-repeat opacity-40 mix-blend-overlay"
-          style={{ backgroundPosition: '50% 30%' }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-overlay"
+          style={{ 
+            backgroundImage: `url('${data.backgroundImage}')`,
+            backgroundPosition: '50% 30%' 
+          }}
         ></div>
       </div>
 
@@ -24,16 +32,16 @@ const HeroSection = () => {
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <div className="opacity-0 animate-fade-in">
             <span className="inline-block px-3 py-1 text-sm md:text-base rounded-full bg-construction-accent/10 text-construction-accent border border-construction-accent/20 mb-4">
-              CONSTRUCȚII INDUSTRIALE ȘI REZIDENȚIALE
+              {data.subtitle}
             </span>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-balance opacity-0 animate-fade-in animate-delay-200">
-            Construim viitorul, cu structuri solide și durabile.
+            {data.title}
           </h1>
 
           <p className="text-xl text-construction-100 max-w-2xl mx-auto opacity-0 animate-fade-in animate-delay-300">
-            Oferim servicii complete de construcții industriale și rezidențiale, adaptate nevoilor tale.
+            {data.description}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 opacity-0 animate-fade-in animate-delay-500">
@@ -41,7 +49,7 @@ const HeroSection = () => {
               onClick={scrollToServices}
               className="px-8 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-construction-accent/20"
             >
-              Descoperă serviciile
+              {data.ctaText}
             </button>
           </div>
         </div>

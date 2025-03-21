@@ -5,16 +5,19 @@ import ServicesSection from "@/components/ServicesSection";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import { useSite } from "@/contexts/SiteContext";
 
 const Index = () => {
+  const { siteData } = useSite();
+
   return (
     <div className="min-h-screen">
       <Navbar />
-      <HeroSection />
-      <ServicesSection />
-      <WhyChooseUs />
-      <ContactSection />
-      <Footer />
+      <HeroSection data={siteData.hero} />
+      <ServicesSection data={siteData.services} />
+      <WhyChooseUs data={siteData.whyChooseUs} />
+      <ContactSection data={siteData.contact} />
+      <Footer data={siteData.footer} />
     </div>
   );
 };

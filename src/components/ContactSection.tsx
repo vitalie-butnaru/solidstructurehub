@@ -4,10 +4,15 @@ import { MapPin, Phone, Mail, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { SiteData } from '@/contexts/SiteContext';
 
-const ContactSection = () => {
+interface ContactSectionProps {
+  data: SiteData['contact'];
+}
+
+const ContactSection = ({ data }: ContactSectionProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -56,17 +61,17 @@ const ContactSection = () => {
     {
       icon: MapPin,
       title: 'Locație',
-      content: '[Adresa ta aici]',
+      content: data.info.location,
     },
     {
       icon: Phone,
       title: 'Telefon',
-      content: '[Numărul tău de contact]',
+      content: data.info.phone,
     },
     {
       icon: Mail,
       title: 'Email',
-      content: '[Adresa ta de email]',
+      content: data.info.email,
     },
   ];
 
@@ -78,13 +83,13 @@ const ContactSection = () => {
             "section-title text-construction-900 opacity-0",
             isVisible && "animate-fade-in"
           )}>
-            CONTACT
+            {data.title}
           </h2>
           <p className={cn(
             "text-construction-600 mt-6 opacity-0",
             isVisible && "animate-fade-in animate-delay-200"
           )}>
-            Suntem aici pentru a răspunde întrebărilor tale și pentru a-ți oferi soluții personalizate
+            {data.description}
           </p>
         </div>
 
@@ -120,15 +125,15 @@ const ContactSection = () => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-construction-600">Luni - Vineri:</span>
-                  <span className="text-construction-900 font-medium">08:00 - 18:00</span>
+                  <span className="text-construction-900 font-medium">{data.schedule.weekdays}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-construction-600">Sâmbătă:</span>
-                  <span className="text-construction-900 font-medium">09:00 - 14:00</span>
+                  <span className="text-construction-900 font-medium">{data.schedule.saturday}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-construction-600">Duminică:</span>
-                  <span className="text-construction-900 font-medium">Închis</span>
+                  <span className="text-construction-900 font-medium">{data.schedule.sunday}</span>
                 </div>
               </div>
             </div>

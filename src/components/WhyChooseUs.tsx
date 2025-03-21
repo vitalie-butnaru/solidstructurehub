@@ -2,35 +2,23 @@
 import { CheckCircle, Clock, Award, Users } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { SiteData } from '@/contexts/SiteContext';
 
-const benefits = [
-  {
-    id: 'experience',
-    icon: Users,
-    title: 'Experiență în proiecte industriale și rezidențiale',
-    description: 'Echipa noastră de experți are ani de experiență în domeniul construcțiilor.',
-  },
-  {
-    id: 'deadlines',
-    icon: Clock,
-    title: 'Respectăm termenele de execuție',
-    description: 'Ne angajăm să livrăm proiectele la timp, respectând termenele stabilite.',
-  },
-  {
-    id: 'quality',
-    icon: Award,
-    title: 'Calitate și profesionalism garantate',
-    description: 'Lucrăm doar cu materiale premium și tehnici moderne de construcție.',
-  },
-  {
-    id: 'solutions',
-    icon: CheckCircle,
-    title: 'Soluții personalizate pentru fiecare client',
-    description: 'Adaptăm serviciile noastre pentru a răspunde nevoilor specifice ale fiecărui client.',
-  },
-];
+// Map pentru iconițe în funcție de ID
+const iconMap: Record<string, any> = {
+  experience: Users,
+  deadlines: Clock,
+  quality: Award,
+  solutions: CheckCircle,
+  // implicit
+  default: CheckCircle
+};
 
-const WhyChooseUs = () => {
+interface WhyChooseUsProps {
+  data: SiteData['whyChooseUs'];
+}
+
+const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -67,45 +55,49 @@ const WhyChooseUs = () => {
             "section-title text-white opacity-0",
             isVisible && "animate-fade-in"
           )}>
-            DE CE SĂ NE ALEGI?
+            {data.title}
           </h2>
           <p className={cn(
             "text-construction-300 mt-6 opacity-0",
             isVisible && "animate-fade-in animate-delay-200"
           )}>
-            Suntem dedicați excelenței în fiecare aspect al activității noastre
+            {data.description}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {benefits.map((benefit, index) => (
-            <div
-              key={benefit.id}
-              className={cn(
-                "p-6 rounded-lg bg-construction-800/50 backdrop-blur-sm border border-construction-700/50 opacity-0 hover:bg-construction-800/70 transition-all duration-300 hover:translate-y-[-5px]",
-                isVisible && "animate-fade-in"
-              )}
-              style={{ animationDelay: `${300 + index * 100}ms` }}
-            >
-              <div className="flex items-start">
-                <div className="flex-shrink-0 mr-4">
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-construction-accent/20 text-construction-accent">
-                    <benefit.icon size={24} />
+          {data.benefits.map((benefit, index) => {
+            const IconComponent = iconMap[benefit.id] || iconMap.default;
+            
+            return (
+              <div
+                key={benefit.id}
+                className={cn(
+                  "p-6 rounded-lg bg-construction-800/50 backdrop-blur-sm border border-construction-700/50 opacity-0 hover:bg-construction-800/70 transition-all duration-300 hover:translate-y-[-5px]",
+                  isVisible && "animate-fade-in"
+                )}
+                style={{ animationDelay: `${300 + index * 100}ms` }}
+              >
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-construction-accent/20 text-construction-accent">
+                      <IconComponent size={24} />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2 text-white">
+                      {benefit.title}
+                    </h3>
+                    
+                    <p className="text-construction-300">
+                      {benefit.description}
+                    </p>
                   </div>
                 </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">
-                    {benefit.title}
-                  </h3>
-                  
-                  <p className="text-construction-300">
-                    {benefit.description}
-                  </p>
-                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         
         <div className={cn(

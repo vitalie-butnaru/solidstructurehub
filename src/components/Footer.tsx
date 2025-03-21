@@ -1,7 +1,12 @@
 
 import { ArrowUp } from 'lucide-react';
+import { SiteData } from '@/contexts/SiteContext';
 
-const Footer = () => {
+interface FooterProps {
+  data: SiteData['footer'];
+}
+
+const Footer = ({ data }: FooterProps) => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -14,9 +19,9 @@ const Footer = () => {
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div className="mb-8 md:mb-0">
-            <span className="text-3xl font-bold text-white">CONSTRUCT<span className="text-construction-accent">PRO</span></span>
+            <span className="text-3xl font-bold text-white">{data.companyName}</span>
             <p className="mt-2 max-w-md">
-              Construim viitorul, cu structuri solide și durabile. Oferim servicii complete de construcții industriale și rezidențiale.
+              {data.description}
             </p>
           </div>
           
@@ -32,7 +37,7 @@ const Footer = () => {
         <div className="border-t border-construction-800 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm">
-              &copy; {new Date().getFullYear()} ConstructPro. Toate drepturile rezervate.
+              {data.copyright}
             </p>
             
             <div className="mt-4 md:mt-0 flex gap-6">
