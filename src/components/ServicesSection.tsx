@@ -3,6 +3,13 @@ import { Warehouse, Store, Home } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { SiteData } from '@/contexts/SiteContext';
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem, 
+  CarouselPrevious, 
+  CarouselNext 
+} from "@/components/ui/carousel";
 
 // Map pentru iconițe în funcție de ID
 const iconMap: Record<string, any> = {
@@ -21,6 +28,7 @@ const ServicesSection = ({ data }: ServicesSectionProps) => {
   const [activeService, setActiveService] = useState(data.items[0]?.id || '');
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [autoplayEnabled, setAutoplayEnabled] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,6 +56,29 @@ const ServicesSection = ({ data }: ServicesSectionProps) => {
       setActiveService(data.items[0].id);
     }
   }, [data.items, activeService]);
+
+  // Setup carousel autoplay
+  useEffect(() => {
+    if (!autoplayEnabled) return;
+    
+    const interval = setInterval(() => {
+      const activeIndex = data.items.findIndex(item => item.id === activeService);
+      const nextIndex = (activeIndex + 1) % data.items.length;
+      if (data.items[nextIndex]) {
+        setActiveService(data.items[nextIndex].id);
+      }
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [activeService, data.items, autoplayEnabled]);
+
+  // Handle carousel mouse events
+  const handleCarouselInteraction = () => {
+    setAutoplayEnabled(false);
+    // Resume autoplay after 10 seconds of inactivity
+    const timer = setTimeout(() => setAutoplayEnabled(true), 10000);
+    return () => clearTimeout(timer);
+  };
 
   return (
     <section id="servicii" ref={sectionRef} className="py-24 relative bg-construction-50 overflow-hidden">
@@ -112,23 +143,37 @@ const ServicesSection = ({ data }: ServicesSectionProps) => {
             "mt-16 p-8 rounded-lg bg-white/50 backdrop-blur-sm border border-construction-200 opacity-0",
             isVisible && "animate-fade-in animate-delay-600"
           )}>
-            <div className="flex items-center justify-center">
-              <div 
-                className="w-full h-64 md:h-96 rounded-lg bg-cover bg-center overflow-hidden"
-                style={{ backgroundImage: `url(${data.items.find(s => s.id === activeService)?.imageSrc})` }}
-              >
-                <div className="w-full h-full bg-gradient-to-r from-construction-900/60 to-construction-800/60 flex items-center justify-center p-8">
-                  <div className="text-center text-white max-w-xl">
-                    <h3 className="text-2xl md:text-3xl font-semibold mb-4">
-                      {data.items.find(s => s.id === activeService)?.title}
-                    </h3>
-                    <p className="text-construction-100">
-                      Oferim soluții complete de proiectare și construcție, de la concept până la finalizare. 
-                      Fiecare proiect este tratat cu atenție la detalii și cu focus pe calitate și durabilitate.
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <div 
+              className="flex items-center justify-center"
+              onMouseEnter={handleCarouselInteraction}
+              onClick={handleCarouselInteraction}
+            >
+              <Carousel className="w-full max-w-4xl">
+                <CarouselContent>
+                  {data.items.map((serviceItem) => (
+                    <CarouselItem key={serviceItem.id} className={activeService === serviceItem.id ? "block" : "hidden"}>
+                      <div 
+                        className="w-full h-64 md:h-96 rounded-lg bg-cover bg-center overflow-hidden"
+                        style={{ backgroundImage: `url(${serviceItem.imageSrc})` }}
+                      >
+                        <div className="w-full h-full bg-gradient-to-r from-construction-900/60 to-construction-800/60 flex items-center justify-center p-8">
+                          <div className="text-center text-white max-w-xl">
+                            <h3 className="text-2xl md:text-3xl font-semibold mb-4 animate-fade-in">
+                              {serviceItem.title}
+                            </h3>
+                            <p className="text-construction-100 animate-fade-in animate-delay-200">
+                              Oferim soluții complete de proiectare și construcție, de la concept până la finalizare. 
+                              Fiecare proiect este tratat cu atenție la detalii și cu focus pe calitate și durabilitate.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-4 bg-white/80 hover:bg-white" />
+                <CarouselNext className="right-4 bg-white/80 hover:bg-white" />
+              </Carousel>
             </div>
           </div>
         )}

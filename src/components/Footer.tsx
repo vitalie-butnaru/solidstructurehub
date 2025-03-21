@@ -36,15 +36,26 @@ const Footer = ({ data }: FooterProps) => {
         
         <div className="border-t border-construction-800 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm">
-              {data.copyright}
-            </p>
+            <div className="flex flex-col md:flex-row gap-2 md:items-center">
+              <p className="text-sm">
+                {data.copyright}
+              </p>
+              <span className="text-sm hidden md:inline">|</span>
+              <a 
+                href="https://t.me/vibu01" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-construction-400 hover:text-construction-accent transition-colors"
+              >
+                Powered by ViBu
+              </a>
+            </div>
             
             <div className="mt-4 md:mt-0 flex gap-6">
-              <a href="#" className="text-construction-400 hover:text-construction-accent transition-colors">
+              <a href="/termeni-si-conditii" className="text-construction-400 hover:text-construction-accent transition-colors">
                 Termeni și condiții
               </a>
-              <a href="#" className="text-construction-400 hover:text-construction-accent transition-colors">
+              <a href="/politica-de-confidentialitate" className="text-construction-400 hover:text-construction-accent transition-colors">
                 Politica de confidențialitate
               </a>
             </div>
