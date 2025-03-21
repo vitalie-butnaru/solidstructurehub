@@ -1,0 +1,124 @@
+
+import { CheckCircle, Clock, Award, Users } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
+
+const benefits = [
+  {
+    id: 'experience',
+    icon: Users,
+    title: 'Experiență în proiecte industriale și rezidențiale',
+    description: 'Echipa noastră de experți are ani de experiență în domeniul construcțiilor.',
+  },
+  {
+    id: 'deadlines',
+    icon: Clock,
+    title: 'Respectăm termenele de execuție',
+    description: 'Ne angajăm să livrăm proiectele la timp, respectând termenele stabilite.',
+  },
+  {
+    id: 'quality',
+    icon: Award,
+    title: 'Calitate și profesionalism garantate',
+    description: 'Lucrăm doar cu materiale premium și tehnici moderne de construcție.',
+  },
+  {
+    id: 'solutions',
+    icon: CheckCircle,
+    title: 'Soluții personalizate pentru fiecare client',
+    description: 'Adaptăm serviciile noastre pentru a răspunde nevoilor specifice ale fiecărui client.',
+  },
+];
+
+const WhyChooseUs = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <section id="de-ce-noi" ref={sectionRef} className="py-24 relative bg-construction-900 text-white overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 z-0 opacity-5">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1553545985-1e0d8781d5db')] bg-cover bg-fixed"></div>
+      </div>
+      
+      <div className="container relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className={cn(
+            "section-title text-white opacity-0",
+            isVisible && "animate-fade-in"
+          )}>
+            DE CE SĂ NE ALEGI?
+          </h2>
+          <p className={cn(
+            "text-construction-300 mt-6 opacity-0",
+            isVisible && "animate-fade-in animate-delay-200"
+          )}>
+            Suntem dedicați excelenței în fiecare aspect al activității noastre
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {benefits.map((benefit, index) => (
+            <div
+              key={benefit.id}
+              className={cn(
+                "p-6 rounded-lg bg-construction-800/50 backdrop-blur-sm border border-construction-700/50 opacity-0 hover:bg-construction-800/70 transition-all duration-300 hover:translate-y-[-5px]",
+                isVisible && "animate-fade-in"
+              )}
+              style={{ animationDelay: `${300 + index * 100}ms` }}
+            >
+              <div className="flex items-start">
+                <div className="flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-construction-accent/20 text-construction-accent">
+                    <benefit.icon size={24} />
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-white">
+                    {benefit.title}
+                  </h3>
+                  
+                  <p className="text-construction-300">
+                    {benefit.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className={cn(
+          "mt-16 text-center opacity-0",
+          isVisible && "animate-fade-in animate-delay-700"
+        )}>
+          <div className="inline-block px-6 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 cursor-pointer">
+            Contactează-ne pentru o ofertă personalizată
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default WhyChooseUs;
