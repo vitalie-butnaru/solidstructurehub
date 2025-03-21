@@ -12,7 +12,21 @@ interface ContactEditorProps {
 }
 
 const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
-  const [formData, setFormData] = useState({ ...data });
+  // Create a proper copy of the data object to avoid type issues
+  const [formData, setFormData] = useState<SiteData["contact"]>({
+    title: data.title,
+    description: data.description,
+    info: {
+      location: data.info.location,
+      phone: data.info.phone,
+      email: data.info.email,
+    },
+    schedule: {
+      weekdays: data.schedule.weekdays,
+      saturday: data.schedule.saturday,
+      sunday: data.schedule.sunday,
+    }
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
