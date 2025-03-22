@@ -33,17 +33,29 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
     
     if (name.includes('.')) {
       const [section, field] = name.split('.');
-      setFormData((prev) => ({
-        ...prev,
-        [section]: {
-          ...prev[section as keyof typeof prev],
-          [field]: value,
-        },
-      }));
+      
+      // Type-safe way of updating nested objects
+      if (section === 'info') {
+        setFormData(prev => ({
+          ...prev,
+          info: {
+            ...prev.info,
+            [field]: value
+          }
+        }));
+      } else if (section === 'schedule') {
+        setFormData(prev => ({
+          ...prev,
+          schedule: {
+            ...prev.schedule,
+            [field]: value
+          }
+        }));
+      }
     } else {
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
-        [name]: value,
+        [name]: value
       }));
     }
   };
