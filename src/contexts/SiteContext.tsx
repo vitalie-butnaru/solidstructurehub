@@ -9,6 +9,7 @@ export interface SiteData {
     description: string;
     ctaText: string;
     backgroundImage: string;
+    additionalImages: string[]; // Imagini adiționale pentru slider
   };
   services: {
     title: string;
@@ -18,6 +19,7 @@ export interface SiteData {
       title: string;
       description: string;
       imageSrc: string;
+      galleryImages: string[]; // Galerie de imagini pentru fiecare serviciu
     }[];
   };
   whyChooseUs: {
@@ -28,6 +30,7 @@ export interface SiteData {
       title: string;
       description: string;
     }[];
+    backgroundImage: string; // Imagine de fundal pentru secțiunea "De ce să ne alegi"
   };
   contact: {
     title: string;
@@ -57,6 +60,14 @@ export interface SiteData {
     description: string;
     copyright: string;
   };
+  projects: {
+    items: {
+      id: number;
+      title: string;
+      description: string;
+      imageSrc: string;
+    }[];
+  };
 }
 
 // Date inițiale
@@ -67,6 +78,10 @@ const initialSiteData: SiteData = {
     description: 'Oferim servicii complete de construcții industriale și rezidențiale, adaptate nevoilor tale.',
     ctaText: 'Descoperă serviciile',
     backgroundImage: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c77',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1541992808222-3bbeb087cfa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+    ]
   },
   services: {
     title: 'SERVICIILE NOASTRE',
@@ -77,18 +92,30 @@ const initialSiteData: SiteData = {
         title: 'Hale industriale',
         description: 'De la boxe auto și depozite, până la supermarketuri și fabrici.',
         imageSrc: 'https://images.unsplash.com/photo-1598257006626-48b0c252070d',
+        galleryImages: [
+          'https://images.unsplash.com/photo-1599809275671-b5942cabc7a2',
+          'https://images.unsplash.com/photo-1565636285505-a392bb733490',
+        ]
       },
       {
         id: 'commercial',
         title: 'Clădiri comerciale',
         description: 'Spații de producție, centre logistice, showroom-uri.',
         imageSrc: 'https://images.unsplash.com/photo-1556156653-e5a7c69cc4c5',
+        galleryImages: [
+          'https://images.unsplash.com/photo-1561133036-61a7ed56b424',
+          'https://images.unsplash.com/photo-1555636222-cae831e670b3',
+        ]
       },
       {
         id: 'residential',
         title: 'Construcții rezidențiale',
         description: 'Case de vacanță, locuințe unifamiliale și ansambluri rezidențiale.',
         imageSrc: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811',
+        galleryImages: [
+          'https://images.unsplash.com/photo-1600585154340-be6161a56a0c',
+          'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c',
+        ]
       },
     ],
   },
@@ -117,6 +144,7 @@ const initialSiteData: SiteData = {
         description: 'Adaptăm serviciile noastre pentru a răspunde nevoilor specifice ale fiecărui client.',
       },
     ],
+    backgroundImage: 'https://images.unsplash.com/photo-1553545985-1e0d8781d5db',
   },
   contact: {
     title: 'CONTACT',
@@ -145,6 +173,34 @@ const initialSiteData: SiteData = {
     companyName: 'CONSTRUCTPRO',
     description: 'Construim viitorul, cu structuri solide și durabile. Oferim servicii complete de construcții industriale și rezidențiale.',
     copyright: `© ${new Date().getFullYear()} ConstructPro. Toate drepturile rezervate.`,
+  },
+  projects: {
+    items: [
+      {
+        id: 1,
+        title: 'Complex Rezidențial Modern',
+        description: 'Ansamblu de locuințe cu design contemporan și facilități premium.',
+        imageSrc: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+      },
+      {
+        id: 2,
+        title: 'Centru Comercial',
+        description: 'Spațiu comercial amplu cu zone de retail și divertisment.',
+        imageSrc: 'https://images.unsplash.com/photo-1555636222-cae831e670b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+      },
+      {
+        id: 3,
+        title: 'Hală Industrială',
+        description: 'Construcție industrială modernă cu spații optimizate pentru producție.',
+        imageSrc: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+      },
+      {
+        id: 4,
+        title: 'Parc Logistic',
+        description: 'Centru logistic cu depozite și platformă de distribuție.',
+        imageSrc: 'https://images.unsplash.com/photo-1553678324-a6e43e20882a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+      },
+    ],
   },
 };
 
@@ -178,6 +234,33 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (parsedData.contact && !parsedData.contact.styles) {
           parsedData.contact.styles = initialSiteData.contact.styles;
         }
+        
+        // Asigurăm compatibilitatea cu versiunea anterioară a datelor
+        // Adăugăm proprietățile noi dacă nu există
+        if (!parsedData.hero.additionalImages) {
+          parsedData.hero.additionalImages = initialSiteData.hero.additionalImages;
+        }
+        
+        if (!parsedData.whyChooseUs.backgroundImage) {
+          parsedData.whyChooseUs.backgroundImage = initialSiteData.whyChooseUs.backgroundImage;
+        }
+        
+        // Adăugăm imagini pentru fiecare serviciu dacă nu există
+        if (parsedData.services && parsedData.services.items) {
+          parsedData.services.items = parsedData.services.items.map((item: any) => {
+            if (!item.galleryImages) {
+              const initialItem = initialSiteData.services.items.find(i => i.id === item.id);
+              item.galleryImages = initialItem ? initialItem.galleryImages : [];
+            }
+            return item;
+          });
+        }
+        
+        // Adăugăm proiecte dacă nu există
+        if (!parsedData.projects) {
+          parsedData.projects = initialSiteData.projects;
+        }
+        
         setSiteData(parsedData);
       } catch (error) {
         console.error("Error parsing stored site data:", error);

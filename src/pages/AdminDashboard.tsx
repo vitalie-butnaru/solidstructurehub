@@ -11,6 +11,7 @@ import ServicesEditor from "@/components/admin/ServicesEditor";
 import WhyChooseUsEditor from "@/components/admin/WhyChooseUsEditor";
 import ContactEditor from "@/components/admin/ContactEditor";
 import FooterEditor from "@/components/admin/FooterEditor";
+import ProjectsEditor from "@/components/admin/ProjectsEditor";
 
 const AdminDashboard = () => {
   const { logout, siteData, updateSiteData } = useSite();
@@ -77,6 +78,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="whyChooseUs" className="flex-1">
               De ce să ne alegi
             </TabsTrigger>
+            <TabsTrigger value="projects" className="flex-1">
+              Proiecte
+            </TabsTrigger>
             <TabsTrigger value="contact" className="flex-1">
               Contact
             </TabsTrigger>
@@ -95,6 +99,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="whyChooseUs" className="p-4 bg-white rounded-lg border">
             <WhyChooseUsEditor data={siteData.whyChooseUs} onSave={(data) => handleSave("whyChooseUs", data)} />
+          </TabsContent>
+
+          <TabsContent value="projects" className="p-4 bg-white rounded-lg border">
+            <ProjectsEditor data={siteData.projects} onSave={(data) => handleSave("projects", data)} />
           </TabsContent>
 
           <TabsContent value="contact" className="p-4 bg-white rounded-lg border">

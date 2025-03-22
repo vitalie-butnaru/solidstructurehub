@@ -13,36 +13,19 @@ interface ServiceImage {
   alt: string;
 }
 
-// Sample additional images for each service
-const serviceImages: Record<string, ServiceImage[]> = {
-  industrial: [
-    { id: "ind-1", src: "https://images.unsplash.com/photo-1598257006626-48b0c252070d", alt: "Hală industrială 1" },
-    { id: "ind-2", src: "https://images.unsplash.com/photo-1599809275671-b5942cabc7a2", alt: "Hală industrială 2" },
-    { id: "ind-3", src: "https://images.unsplash.com/photo-1565636285505-a392bb733490", alt: "Hală industrială 3" },
-  ],
-  commercial: [
-    { id: "com-1", src: "https://images.unsplash.com/photo-1556156653-e5a7c69cc4c5", alt: "Clădire comercială 1" },
-    { id: "com-2", src: "https://images.unsplash.com/photo-1561133036-61a7ed56b424", alt: "Clădire comercială 2" },
-    { id: "com-3", src: "https://images.unsplash.com/photo-1555636222-cae831e670b3", alt: "Clădire comercială 3" },
-  ],
-  residential: [
-    { id: "res-1", src: "https://images.unsplash.com/photo-1613490493576-7fde63acd811", alt: "Construcție rezidențială 1" },
-    { id: "res-2", src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c", alt: "Construcție rezidențială 2" },
-    { id: "res-3", src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c", alt: "Construcție rezidențială 3" },
-  ],
-};
-
 const ServicesDetailCarousel = ({ service }: ServicesDetailCarouselProps) => {
   const [images, setImages] = useState<ServiceImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    // Get images for the current service or use a default empty array
-    const serviceSpecificImages = serviceImages[service.id] || [];
-    // Add the main image from the service to the carousel
+    // Construim array-ul de imagini cu imaginea principală și imaginile din galerie
     const allImages = [
       { id: "main", src: service.imageSrc, alt: service.title },
-      ...serviceSpecificImages,
+      ...service.galleryImages.map((src, index) => ({
+        id: `gallery-${index}`,
+        src,
+        alt: `${service.title} ${index + 1}`
+      }))
     ];
     setImages(allImages);
     setCurrentIndex(0);

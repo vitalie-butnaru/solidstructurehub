@@ -12,7 +12,7 @@ import {
   DialogTrigger,
   DialogClose
 } from "@/components/ui/dialog";
-import { Pencil, Trash, Plus } from 'lucide-react';
+import { Pencil, Trash, Plus, Image } from 'lucide-react';
 import { SiteData } from "@/contexts/SiteContext";
 
 interface WhyChooseUsEditorProps {
@@ -121,6 +121,30 @@ const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
             onChange={handleChange}
             required
           />
+        </div>
+
+        <div>
+          <Label htmlFor="backgroundImage">URL imagine fundal</Label>
+          <Input
+            id="backgroundImage"
+            name="backgroundImage"
+            value={formData.backgroundImage}
+            onChange={handleChange}
+            placeholder="https://example.com/image.jpg"
+            required
+          />
+          {formData.backgroundImage && (
+            <div className="mt-2 h-24 rounded-md overflow-hidden">
+              <img 
+                src={formData.backgroundImage} 
+                alt="Background Preview" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          <p className="text-sm text-gray-500 mt-1">
+            Această imagine va fi afișată ca pattern în fundal (cu transparență)
+          </p>
         </div>
 
         <div className="space-y-4">

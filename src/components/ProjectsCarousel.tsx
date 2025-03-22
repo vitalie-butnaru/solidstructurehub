@@ -3,43 +3,11 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
-
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  imageSrc: string;
-}
-
-// Example projects - in a real app, these would come from your SiteContext
-const projects: Project[] = [
-  {
-    id: 1,
-    title: 'Complex Rezidențial Modern',
-    description: 'Ansamblu de locuințe cu design contemporan și facilități premium.',
-    imageSrc: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-  },
-  {
-    id: 2,
-    title: 'Centru Comercial',
-    description: 'Spațiu comercial amplu cu zone de retail și divertisment.',
-    imageSrc: 'https://images.unsplash.com/photo-1555636222-cae831e670b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-  },
-  {
-    id: 3,
-    title: 'Hală Industrială',
-    description: 'Construcție industrială modernă cu spații optimizate pentru producție.',
-    imageSrc: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-  },
-  {
-    id: 4,
-    title: 'Parc Logistic',
-    description: 'Centru logistic cu depozite și platformă de distribuție.',
-    imageSrc: 'https://images.unsplash.com/photo-1553678324-a6e43e20882a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-  },
-];
+import { useSite } from '@/contexts/SiteContext';
 
 const ProjectsCarousel = () => {
+  const { siteData } = useSite();
+  const projects = siteData.projects.items;
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -48,7 +16,7 @@ const ProjectsCarousel = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [projects.length]);
 
   return (
     <section className="relative w-full h-[70vh] overflow-hidden bg-construction-900">

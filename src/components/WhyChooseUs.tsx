@@ -55,7 +55,10 @@ const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
     <section id="de-ce-noi" ref={sectionRef} className="py-24 relative bg-construction-900 text-white overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 z-0 opacity-5">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1553545985-1e0d8781d5db')] bg-cover bg-fixed"></div>
+        <div 
+          className="absolute inset-0 bg-cover bg-fixed" 
+          style={{ backgroundImage: `url('${data.backgroundImage}')` }}
+        ></div>
       </div>
       
       <div className="container relative z-10">

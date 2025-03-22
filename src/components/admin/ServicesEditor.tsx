@@ -12,7 +12,7 @@ import {
   DialogTrigger,
   DialogClose
 } from "@/components/ui/dialog";
-import { Pencil, Trash, Plus } from 'lucide-react';
+import { Pencil, Trash, Plus, ImagePlus } from 'lucide-react';
 import { SiteData } from "@/contexts/SiteContext";
 
 interface ServicesEditorProps {
@@ -27,6 +27,7 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
     title: string;
     description: string;
     imageSrc: string;
+    galleryImages: string[];
   } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -64,6 +65,7 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
       title: '',
       description: '',
       imageSrc: '',
+      galleryImages: [],
     });
     setDialogOpen(true);
   };
@@ -96,6 +98,41 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
 
     setCurrentItem(null);
     setDialogOpen(false);
+  };
+
+  const handleAddGalleryImage = () => {
+    if (!currentItem) return;
+    
+    setCurrentItem(prev => ({
+      ...prev!,
+      galleryImages: [...prev!.galleryImages, ""]
+    }));
+  };
+
+  const handleGalleryImageChange = (index: number, value: string) => {
+    if (!currentItem) return;
+    
+    setCurrentItem(prev => {
+      const newImages = [...prev!.galleryImages];
+      newImages[index] = value;
+      return {
+        ...prev!,
+        galleryImages: newImages
+      };
+    });
+  };
+
+  const handleRemoveGalleryImage = (index: number) => {
+    if (!currentItem) return;
+    
+    setCurrentItem(prev => {
+      const newImages = [...prev!.galleryImages];
+      newImages.splice(index, 1);
+      return {
+        ...prev!,
+        galleryImages: newImages
+      };
+    });
   };
 
   return (
@@ -177,6 +214,12 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
                     />
                   )}
                 </div>
+                <div className="mt-2 text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <ImagePlus className="h-3 w-3 mr-1" />
+                    <span>{item.galleryImages.length} imagini în galerie</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -190,7 +233,7 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {currentItem && formData.items.some(item => item.id === currentItem.id) 
@@ -199,16 +242,30 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
             </DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="edit-title">Titlu</Label>
-              <Input
-                id="edit-title"
-                name="title"
-                value={currentItem?.title || ''}
-                onChange={handleItemChange}
-                required
-              />
+          <div className="space-y-6 py-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-title">Titlu</Label>
+                <Input
+                  id="edit-title"
+                  name="title"
+                  value={currentItem?.title || ''}
+                  onChange={handleItemChange}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="edit-imageSrc">URL imagine principală</Label>
+                <Input
+                  id="edit-imageSrc"
+                  name="imageSrc"
+                  value={currentItem?.imageSrc || ''}
+                  onChange={handleItemChange}
+                  placeholder="https://example.com/image.jpg"
+                  required
+                />
+              </div>
             </div>
             
             <div>
@@ -222,25 +279,62 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
               />
             </div>
             
-            <div>
-              <Label htmlFor="edit-imageSrc">URL imagine</Label>
-              <Input
-                id="edit-imageSrc"
-                name="imageSrc"
-                value={currentItem?.imageSrc || ''}
-                onChange={handleItemChange}
-                placeholder="https://example.com/image.jpg"
-                required
-              />
-              {currentItem?.imageSrc && (
-                <div className="mt-2 rounded-md overflow-hidden h-32">
-                  <img 
-                    src={currentItem.imageSrc}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+            {currentItem?.imageSrc && (
+              <div className="rounded-md overflow-hidden h-32">
+                <img 
+                  src={currentItem.imageSrc}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <Label>Galerie imagini</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddGalleryImage}
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-4 w-4" /> Adaugă imagine
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentItem?.galleryImages.map((image, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        value={image}
+                        onChange={(e) => handleGalleryImageChange(index, e.target.value)}
+                        placeholder="URL imagine"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveGalleryImage(index)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    {image && (
+                      <div className="h-24 rounded-md overflow-hidden">
+                        <img 
+                          src={image} 
+                          alt={`Gallery ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           

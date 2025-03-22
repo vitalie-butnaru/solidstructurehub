@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SiteData } from "@/contexts/SiteContext";
+import { Plus, Trash } from "lucide-react";
 
 interface HeroEditorProps {
   data: SiteData["hero"];
@@ -25,6 +26,35 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
+  };
+
+  const handleAddAdditionalImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      additionalImages: [...prev.additionalImages, ""]
+    }));
+  };
+
+  const handleAdditionalImageChange = (index: number, value: string) => {
+    setFormData(prev => {
+      const newImages = [...prev.additionalImages];
+      newImages[index] = value;
+      return {
+        ...prev,
+        additionalImages: newImages
+      };
+    });
+  };
+
+  const handleRemoveAdditionalImage = (index: number) => {
+    setFormData(prev => {
+      const newImages = [...prev.additionalImages];
+      newImages.splice(index, 1);
+      return {
+        ...prev,
+        additionalImages: newImages
+      };
+    });
   };
 
   return (
@@ -78,7 +108,7 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
           </div>
 
           <div>
-            <Label htmlFor="backgroundImage">URL imagine fundal</Label>
+            <Label htmlFor="backgroundImage">URL imagine fundal principală</Label>
             <Input
               id="backgroundImage"
               name="backgroundImage"
@@ -87,9 +117,63 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
               placeholder="https://example.com/image.jpg"
               required
             />
+            {formData.backgroundImage && (
+              <div className="mt-2 h-24 rounded-md overflow-hidden">
+                <img 
+                  src={formData.backgroundImage} 
+                  alt="Background Preview" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
             <p className="text-sm text-gray-500 mt-1">
               Introduceți URL-ul unei imagini (de preferință de pe Unsplash sau alt serviciu)
             </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <Label>Imagini suplimentare pentru slider</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleAddAdditionalImage}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" /> Adaugă imagine
+              </Button>
+            </div>
+
+            {formData.additionalImages.map((image, index) => (
+              <div key={index} className="flex gap-2 items-start">
+                <div className="flex-1">
+                  <Input
+                    value={image}
+                    onChange={(e) => handleAdditionalImageChange(index, e.target.value)}
+                    placeholder="URL imagine"
+                  />
+                  {image && (
+                    <div className="mt-2 h-16 rounded-md overflow-hidden">
+                      <img 
+                        src={image} 
+                        alt={`Slide ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemoveAdditionalImage(index)}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
           </div>
         </div>
       </div>
