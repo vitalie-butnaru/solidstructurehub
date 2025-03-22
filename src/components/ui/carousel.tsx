@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -17,6 +18,8 @@ type CarouselProps = {
   plugins?: CarouselPlugin
   orientation?: "horizontal" | "vertical"
   setApi?: (api: CarouselApi) => void
+  setActiveIndex?: (index: number) => void
+  activeIndex?: number
 }
 
 type CarouselContextProps = {
@@ -26,6 +29,8 @@ type CarouselContextProps = {
   scrollNext: () => void
   canScrollPrev: boolean
   canScrollNext: boolean
+  activeIndex?: number
+  setActiveIndex?: (index: number) => void
 } & CarouselProps
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
@@ -52,6 +57,8 @@ const Carousel = React.forwardRef<
       plugins,
       className,
       children,
+      setActiveIndex,
+      activeIndex,
       ...props
     },
     ref
@@ -71,9 +78,13 @@ const Carousel = React.forwardRef<
         return
       }
 
+      if (setActiveIndex) {
+        setActiveIndex(api.selectedScrollSnap())
+      }
+      
       setCanScrollPrev(api.canScrollPrev())
       setCanScrollNext(api.canScrollNext())
-    }, [])
+    }, [setActiveIndex])
 
     const scrollPrev = React.useCallback(() => {
       api?.scrollPrev()
@@ -95,6 +106,13 @@ const Carousel = React.forwardRef<
       },
       [scrollPrev, scrollNext]
     )
+
+    // Effect to handle external activeIndex changes
+    React.useEffect(() => {
+      if (api && activeIndex !== undefined && activeIndex >= 0) {
+        api.scrollTo(activeIndex)
+      }
+    }, [api, activeIndex])
 
     React.useEffect(() => {
       if (!api || !setApi) {
@@ -130,6 +148,8 @@ const Carousel = React.forwardRef<
           scrollNext,
           canScrollPrev,
           canScrollNext,
+          activeIndex,
+          setActiveIndex,
         }}
       >
         <div

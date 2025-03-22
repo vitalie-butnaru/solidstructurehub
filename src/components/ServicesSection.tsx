@@ -1,182 +1,85 @@
 
-import { Warehouse, Store, Home } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { SiteData } from '@/contexts/SiteContext';
-import { 
-  Carousel, 
-  CarouselContent, 
-  CarouselItem, 
-  CarouselPrevious, 
-  CarouselNext 
-} from "@/components/ui/carousel";
-
-// Map pentru iconițe în funcție de ID
-const iconMap: Record<string, any> = {
-  industrial: Warehouse,
-  commercial: Store,
-  residential: Home,
-  // implicit
-  default: Store
-};
+import { useState } from "react";
+import { SiteData } from "@/contexts/SiteContext";
+import ServicesDetailCarousel from "./ServicesDetailCarousel";
 
 interface ServicesSectionProps {
-  data: SiteData['services'];
+  data: SiteData["services"];
 }
 
 const ServicesSection = ({ data }: ServicesSectionProps) => {
-  const [activeService, setActiveService] = useState(data.items[0]?.id || '');
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [autoplayEnabled, setAutoplayEnabled] = useState(true);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  // Actualizăm activeService când se schimbă datele
-  useEffect(() => {
-    if (data.items.length > 0 && !data.items.find(item => item.id === activeService)) {
-      setActiveService(data.items[0].id);
-    }
-  }, [data.items, activeService]);
-
-  // Setup carousel autoplay
-  useEffect(() => {
-    if (!autoplayEnabled) return;
-    
-    const interval = setInterval(() => {
-      const activeIndex = data.items.findIndex(item => item.id === activeService);
-      const nextIndex = (activeIndex + 1) % data.items.length;
-      if (data.items[nextIndex]) {
-        setActiveService(data.items[nextIndex].id);
-      }
-    }, 3000);
-    
-    return () => clearInterval(interval);
-  }, [activeService, data.items, autoplayEnabled]);
-
-  // Handle carousel mouse events
-  const handleCarouselInteraction = () => {
-    setAutoplayEnabled(false);
-    // Resume autoplay after 10 seconds of inactivity
-    const timer = setTimeout(() => setAutoplayEnabled(true), 10000);
-    return () => clearTimeout(timer);
-  };
+  const [selectedService, setSelectedService] = useState(data.items[0]);
 
   return (
-    <section id="servicii" ref={sectionRef} className="py-24 relative bg-construction-50 overflow-hidden">
-      <div className="container relative z-10">
+    <section id="servicii" className="py-24 bg-gray-50">
+      <div className="container">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className={cn(
-            "section-title text-construction-900 opacity-0",
-            isVisible && "animate-fade-in"
-          )}>
-            {data.title}
-          </h2>
-          <p className={cn(
-            "text-construction-600 mt-6 opacity-0",
-            isVisible && "animate-fade-in animate-delay-200"
-          )}>
-            {data.description}
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-construction-900 mb-4">{data.title}</h2>
+          <p className="text-construction-600">{data.description}</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {data.items.map((service, index) => {
-            const IconComponent = iconMap[service.id] || iconMap.default;
-            
-            return (
-              <div
-                key={service.id}
-                className={cn(
-                  "service-card group cursor-pointer p-8 opacity-0",
-                  isVisible && "animate-fade-in",
-                  activeService === service.id && "ring-2 ring-construction-accent/50"
-                )}
-                style={{ animationDelay: `${300 + index * 100}ms` }}
-                onClick={() => setActiveService(service.id)}
-              >
-                <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${service.imageSrc})` }}
-                  ></div>
-                </div>
-                
-                <div className="relative z-10">
-                  <div className="w-14 h-14 flex items-center justify-center rounded-full bg-construction-100 text-construction-accent mb-6 group-hover:bg-construction-accent/10 transition-colors">
-                    <IconComponent size={28} />
-                  </div>
-                  
-                  <h3 className="text-xl font-semibold text-construction-900 mb-3 group-hover:text-construction-accent transition-colors">
-                    {service.title}
-                  </h3>
-                  
-                  <p className="text-construction-600">
-                    {service.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {data.items.length > 0 && (
-          <div className={cn(
-            "mt-16 p-8 rounded-lg bg-white/50 backdrop-blur-sm border border-construction-200 opacity-0",
-            isVisible && "animate-fade-in animate-delay-600"
-          )}>
-            <div 
-              className="flex items-center justify-center"
-              onMouseEnter={handleCarouselInteraction}
-              onClick={handleCarouselInteraction}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          {data.items.map((service) => (
+            <div
+              key={service.id}
+              className={`service-card p-6 cursor-pointer transform transition-all duration-300 hover:-translate-y-2 ${
+                selectedService.id === service.id
+                  ? "border-construction-accent border-2 shadow-lg"
+                  : ""
+              }`}
+              onClick={() => setSelectedService(service)}
             >
-              <Carousel className="w-full max-w-4xl">
-                <CarouselContent>
-                  {data.items.map((serviceItem) => (
-                    <CarouselItem key={serviceItem.id} className={activeService === serviceItem.id ? "block" : "hidden"}>
-                      <div 
-                        className="w-full h-64 md:h-96 rounded-lg bg-cover bg-center overflow-hidden"
-                        style={{ backgroundImage: `url(${serviceItem.imageSrc})` }}
-                      >
-                        <div className="w-full h-full bg-gradient-to-r from-construction-900/60 to-construction-800/60 flex items-center justify-center p-8">
-                          <div className="text-center text-white max-w-xl">
-                            <h3 className="text-2xl md:text-3xl font-semibold mb-4 animate-fade-in">
-                              {serviceItem.title}
-                            </h3>
-                            <p className="text-construction-100 animate-fade-in animate-delay-200">
-                              Oferim soluții complete de proiectare și construcție, de la concept până la finalizare. 
-                              Fiecare proiect este tratat cu atenție la detalii și cu focus pe calitate și durabilitate.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-4 bg-white/80 hover:bg-white" />
-                <CarouselNext className="right-4 bg-white/80 hover:bg-white" />
-              </Carousel>
+              <div
+                className="h-48 mb-4 rounded-lg bg-cover bg-center"
+                style={{ backgroundImage: `url(${service.imageSrc})` }}
+              ></div>
+              <h3 className="text-xl font-semibold text-construction-900 mb-2">
+                {service.title}
+              </h3>
+              <p className="text-construction-600">{service.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white rounded-xl p-8 shadow-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-construction-900">
+                {selectedService.title}
+              </h3>
+              <p className="text-construction-600">{selectedService.description}</p>
+              
+              <div className="pt-4">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-construction-accent"></span>
+                    <span>Proiectare și execuție completă</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-construction-accent"></span>
+                    <span>Consultanță tehnică și financiară</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-construction-accent"></span>
+                    <span>Materiale de calitate premium</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-construction-accent"></span>
+                    <span>Soluții personalizate pentru fiecare client</span>
+                  </li>
+                </ul>
+                
+                <button className="mt-6 px-6 py-2 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors">
+                  Solicită o ofertă
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <ServicesDetailCarousel service={selectedService} />
             </div>
           </div>
-        )}
+        </div>
       </div>
     </section>
   );

@@ -1,215 +1,206 @@
 
-import { useState, useRef, useEffect } from 'react';
-import { MapPin, Phone, Mail, Send } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { SiteData } from '@/contexts/SiteContext';
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { SiteData } from "@/contexts/SiteContext";
 
 interface ContactSectionProps {
-  data: SiteData['contact'];
+  data: SiteData["contact"];
 }
 
 const ContactSection = ({ data }: ContactSectionProps) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      toast.success('Mesajul a fost trimis cu succes!', {
-        description: 'Te vom contacta în curând.',
+    // Simple validation
+    if (!formData.name || !formData.email || !formData.message) {
+      toast({
+        title: "Eroare",
+        description: "Vă rugăm să completați toate câmpurile obligatorii.",
+        variant: "destructive",
       });
-      setName('');
-      setEmail('');
-      setMessage('');
-      setIsSubmitting(false);
-    }, 1500);
+      return;
+    }
+    
+    // Here you would normally send the data to your backend
+    console.log("Form data submitted:", formData);
+    
+    // Show success message
+    toast({
+      title: "Mesaj trimis",
+      description: "Vă mulțumim! Vă vom contacta în curând.",
+    });
+    
+    // Reset form
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    });
   };
 
-  const contactInfo = [
-    {
-      icon: MapPin,
-      title: 'Locație',
-      content: data.info.location,
-    },
-    {
-      icon: Phone,
-      title: 'Telefon',
-      content: data.info.phone,
-    },
-    {
-      icon: Mail,
-      title: 'Email',
-      content: data.info.email,
-    },
-  ];
-
   return (
-    <section id="contact" ref={sectionRef} className="py-24 bg-white relative overflow-hidden">
-      <div className="container relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className={cn(
-            "section-title text-construction-900 opacity-0",
-            isVisible && "animate-fade-in"
-          )}>
-            {data.title}
-          </h2>
-          <p className={cn(
-            "text-construction-600 mt-6 opacity-0",
-            isVisible && "animate-fade-in animate-delay-200"
-          )}>
-            {data.description}
-          </p>
+    <section id="contact" className="py-24 bg-construction-50">
+      <div className="container">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-construction-900 mb-4">{data.title}</h2>
+          <p className="text-construction-600">{data.description}</p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-12">
-          <div className={cn(
-            "lg:col-span-1 opacity-0",
-            isVisible && "animate-fade-in animate-delay-300"
-          )}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="bg-white p-8 rounded-xl shadow-lg">
+            <h3 className="text-2xl font-semibold text-construction-900 mb-6">Trimite-ne un mesaj</h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-construction-700 mb-1">
+                  Nume complet *
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-construction-200 rounded-lg focus:ring-2 focus:ring-construction-accent focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-construction-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-construction-200 rounded-lg focus:ring-2 focus:ring-construction-accent focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-construction-700 mb-1">
+                  Telefon
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-construction-200 rounded-lg focus:ring-2 focus:ring-construction-accent focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-construction-700 mb-1">
+                  Mesaj *
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  rows={5}
+                  className="w-full px-4 py-2 border border-construction-200 rounded-lg focus:ring-2 focus:ring-construction-accent focus:border-transparent"
+                  required
+                ></textarea>
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full py-3 px-6 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors"
+              >
+                Trimite mesajul
+              </button>
+              
+              <p className="text-sm text-construction-500 mt-2">
+                * Câmpuri obligatorii
+              </p>
+            </form>
+          </div>
+          
+          <div className="bg-construction-900 p-8 rounded-xl shadow-lg text-white">
+            <h3 className="text-2xl font-semibold mb-8">Informații de contact</h3>
+            
             <div className="space-y-8">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="flex items-start">
-                  <div className="flex-shrink-0 mr-4">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-construction-100 text-construction-accent">
-                      <item.icon size={20} />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium text-construction-900 mb-1">
-                      {item.title}
-                    </h3>
-                    
-                    <p className="text-construction-600">
-                      {item.content}
-                    </p>
-                  </div>
+              <div className="flex items-start gap-4">
+                <MapPin className="text-construction-accent h-6 w-6 mt-1" />
+                <div>
+                  <h4 className="font-medium text-construction-100 mb-1">Adresă</h4>
+                  <p>{data.info.location}</p>
                 </div>
-              ))}
-            </div>
-
-            <div className="mt-12 p-6 rounded-lg bg-construction-50 border border-construction-100">
-              <h3 className="text-lg font-medium text-construction-900 mb-4">Program de lucru</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-construction-600">Luni - Vineri:</span>
-                  <span className="text-construction-900 font-medium">{data.schedule.weekdays}</span>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <Phone className="text-construction-accent h-6 w-6 mt-1" />
+                <div>
+                  <h4 className="font-medium text-construction-100 mb-1">Telefon</h4>
+                  <p>{data.info.phone}</p>
+                  <a 
+                    href={`tel:${data.info.phone.replace(/\s+/g, '')}`}
+                    className="inline-block mt-2 text-sm px-4 py-1 bg-construction-800 hover:bg-construction-700 rounded-full transition-colors"
+                  >
+                    Sună acum
+                  </a>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-construction-600">Sâmbătă:</span>
-                  <span className="text-construction-900 font-medium">{data.schedule.saturday}</span>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <Mail className="text-construction-accent h-6 w-6 mt-1" />
+                <div>
+                  <h4 className="font-medium text-construction-100 mb-1">Email</h4>
+                  <p>{data.info.email}</p>
+                  <a 
+                    href={`mailto:${data.info.email}`}
+                    className="inline-block mt-2 text-sm px-4 py-1 bg-construction-800 hover:bg-construction-700 rounded-full transition-colors"
+                  >
+                    Trimite email
+                  </a>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-construction-600">Duminică:</span>
-                  <span className="text-construction-900 font-medium">{data.schedule.sunday}</span>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <Clock className="text-construction-accent h-6 w-6 mt-1" />
+                <div>
+                  <h4 className="font-medium text-construction-100 mb-1">Program de lucru</h4>
+                  <p>Luni - Vineri: {data.schedule.weekdays}</p>
+                  <p>Sâmbătă: {data.schedule.saturday}</p>
+                  <p>Duminică: {data.schedule.sunday}</p>
                 </div>
               </div>
             </div>
-          </div>
-          
-          <div className={cn(
-            "lg:col-span-2 opacity-0",
-            isVisible && "animate-fade-in animate-delay-400"
-          )}>
-            <div className="p-8 rounded-lg bg-white shadow-lg border border-construction-100">
-              <h3 className="text-xl font-semibold text-construction-900 mb-6">Trimite-ne un mesaj</h3>
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium text-construction-700">
-                      Nume complet
-                    </label>
-                    <Input
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Numele tău"
-                      required
-                      className="w-full border-construction-200 focus:border-construction-accent focus:ring-construction-accent/10"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-construction-700">
-                      Email
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="exemplu@email.com"
-                      required
-                      className="w-full border-construction-200 focus:border-construction-accent focus:ring-construction-accent/10"
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium text-construction-700">
-                    Mesaj
-                  </label>
-                  <Textarea
-                    id="message"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Cum te putem ajuta?"
-                    required
-                    className="w-full min-h-[150px] border-construction-200 focus:border-construction-accent focus:ring-construction-accent/10"
-                  />
-                </div>
-                
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-construction-accent hover:bg-construction-accent/90 text-white"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center">
-                      <span className="animate-spin mr-2">◌</span>
-                      Se trimite...
-                    </span>
-                  ) : (
-                    <span className="flex items-center">
-                      <Send className="mr-2 h-4 w-4" />
-                      Trimite mesaj
-                    </span>
-                  )}
-                </Button>
-              </form>
+            
+            <div className="mt-10">
+              <button 
+                onClick={() => {
+                  toast({
+                    title: "Solicită o ofertă personalizată",
+                    description: "Completați formularul din stânga sau contactați-ne telefonic pentru o ofertă personalizată.",
+                  });
+                }}
+                className="w-full py-3 px-6 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors"
+              >
+                Contactează-ne pentru o ofertă personalizată
+              </button>
             </div>
           </div>
         </div>

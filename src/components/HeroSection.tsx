@@ -1,12 +1,38 @@
 
 import { ArrowDown } from 'lucide-react';
 import { SiteData } from '@/contexts/SiteContext';
+import { useState, useEffect } from 'react';
 
 interface HeroSectionProps {
   data: SiteData['hero'];
 }
 
 const HeroSection = ({ data }: HeroSectionProps) => {
+  const [currentBackground, setCurrentBackground] = useState(data.backgroundImage);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Sample additional backgrounds for a more dynamic hero section
+  const backgrounds = [
+    data.backgroundImage,
+    'https://images.unsplash.com/photo-1541992808222-3bbeb087cfa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+  ];
+
+  // Background image rotation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        const currentIndex = backgrounds.indexOf(currentBackground);
+        const nextIndex = (currentIndex + 1) % backgrounds.length;
+        setCurrentBackground(backgrounds[nextIndex]);
+        setIsTransitioning(false);
+      }, 500);
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [currentBackground, backgrounds]);
+
   const scrollToServices = () => {
     const servicesSection = document.getElementById('servicii');
     if (servicesSection) {
@@ -19,9 +45,9 @@ const HeroSection = ({ data }: HeroSectionProps) => {
       {/* Background with Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-construction-900/90 to-construction-800/90 z-0">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-overlay"
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${isTransitioning ? 'opacity-0' : 'opacity-40'} mix-blend-overlay`}
           style={{ 
-            backgroundImage: `url('${data.backgroundImage}')`,
+            backgroundImage: `url('${currentBackground}')`,
             backgroundPosition: '50% 30%' 
           }}
         ></div>
