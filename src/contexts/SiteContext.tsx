@@ -131,6 +131,15 @@ const initialSiteData: SiteData = {
       saturday: '09:00 - 14:00',
       sunday: 'Închis',
     },
+    styles: {
+      titleFont: "font-sans",
+      titleSize: "text-xl",
+      titleColor: "text-gray-800",
+      sectionBg: "bg-white",
+      contentFont: "font-sans",
+      contentSize: "text-base",
+      contentColor: "text-gray-800",
+    }
   },
   footer: {
     companyName: 'CONSTRUCTPRO',
@@ -165,6 +174,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
+        // Ensure styles are properly copied from stored data or initialized
+        if (parsedData.contact && !parsedData.contact.styles) {
+          parsedData.contact.styles = initialSiteData.contact.styles;
+        }
         setSiteData(parsedData);
       } catch (error) {
         console.error("Error parsing stored site data:", error);
