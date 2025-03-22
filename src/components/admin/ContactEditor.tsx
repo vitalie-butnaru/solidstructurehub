@@ -63,17 +63,32 @@ const bgColorOptions = [
   { value: "bg-pink-50", label: "Light Pink" },
 ];
 
-// Extended contact data with styling options
-interface ExtendedContactData extends SiteData["contact"] {
-  styles?: {
-    titleFont?: string;
-    titleSize?: string;
-    titleColor?: string;
-    sectionBg?: string;
-    contentFont?: string;
-    contentSize?: string;
-    contentColor?: string;
+// We need to define styles interface separately
+interface StyleOptions {
+  titleFont?: string;
+  titleSize?: string;
+  titleColor?: string;
+  sectionBg?: string;
+  contentFont?: string;
+  contentSize?: string;
+  contentColor?: string;
+}
+
+// Then create the extended contact data type
+interface ExtendedContactData {
+  title: string;
+  description: string;
+  info: {
+    location: string;
+    phone: string;
+    email: string;
   };
+  schedule: {
+    weekdays: string;
+    saturday: string;
+    sunday: string;
+  };
+  styles?: StyleOptions;
 }
 
 const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
@@ -91,7 +106,7 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
       saturday: data.schedule.saturday,
       sunday: data.schedule.sunday,
     },
-    styles: data.styles || {
+    styles: (data as any).styles || {
       titleFont: "font-sans",
       titleSize: "text-xl",
       titleColor: "text-gray-800",
@@ -125,7 +140,7 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
             [field]: value
           }
         }));
-      } else if (section === 'styles') {
+      } else if (section === 'styles' && prev.styles) {
         setFormData(prev => ({
           ...prev,
           styles: {
@@ -172,7 +187,16 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    // Convert back to SiteData["contact"] format to maintain compatibility
+    const saveData: SiteData["contact"] = {
+      title: formData.title,
+      description: formData.description,
+      info: formData.info,
+      schedule: formData.schedule
+    };
+    // Add styles as any to maintain compatibility with existing code
+    (saveData as any).styles = formData.styles;
+    onSave(saveData);
   };
 
   return (

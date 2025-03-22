@@ -42,6 +42,15 @@ export interface SiteData {
       saturday: string;
       sunday: string;
     };
+    styles?: {
+      titleFont?: string;
+      titleSize?: string;
+      titleColor?: string;
+      sectionBg?: string;
+      contentFont?: string;
+      contentSize?: string;
+      contentColor?: string;
+    };
   };
   footer: {
     companyName: string;
