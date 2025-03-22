@@ -140,7 +140,7 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
             [field]: value
           }
         }));
-      } else if (section === 'styles' && prev.styles) {
+      } else if (section === 'styles' && formData.styles) {
         setFormData(prev => ({
           ...prev,
           styles: {
