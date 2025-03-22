@@ -3,6 +3,7 @@ import { CheckCircle, Clock, Award, Users } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { SiteData } from '@/contexts/SiteContext';
+import { useNavigate } from 'react-router-dom';
 
 // Map pentru iconițe în funcție de ID
 const iconMap: Record<string, any> = {
@@ -21,6 +22,7 @@ interface WhyChooseUsProps {
 const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -41,6 +43,13 @@ const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
       observer.disconnect();
     };
   }, []);
+
+  const handleContactClick = () => {
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section id="de-ce-noi" ref={sectionRef} className="py-24 relative bg-construction-900 text-white overflow-hidden">
@@ -104,9 +113,12 @@ const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
           "mt-16 text-center opacity-0",
           isVisible && "animate-fade-in animate-delay-700"
         )}>
-          <div className="inline-block px-6 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 cursor-pointer">
+          <button
+            onClick={handleContactClick}
+            className="inline-block px-6 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 cursor-pointer"
+          >
             Contactează-ne pentru o ofertă personalizată
-          </div>
+          </button>
         </div>
       </div>
     </section>

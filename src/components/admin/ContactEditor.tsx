@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,7 +139,7 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
             [field]: value
           }
         }));
-      } else if (section === 'styles' && prev.styles) {
+      } else if (section === 'styles' && formData.styles) {
         setFormData(prev => ({
           ...prev,
           styles: {

@@ -10,13 +10,23 @@ interface HeroSectionProps {
 const HeroSection = ({ data }: HeroSectionProps) => {
   const [currentBackground, setCurrentBackground] = useState(data.backgroundImage);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  
-  // Sample additional backgrounds for a more dynamic hero section
-  const backgrounds = [
+  const [backgrounds, setBackgrounds] = useState([
     data.backgroundImage,
     'https://images.unsplash.com/photo-1541992808222-3bbeb087cfa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
     'https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-  ];
+  ]);
+  
+  // Update backgrounds when data changes
+  useEffect(() => {
+    setBackgrounds(prev => {
+      const newBackgrounds = [...prev];
+      newBackgrounds[0] = data.backgroundImage;
+      return newBackgrounds;
+    });
+    
+    // Reset current background to the new one from data
+    setCurrentBackground(data.backgroundImage);
+  }, [data.backgroundImage]);
 
   // Background image rotation
   useEffect(() => {
