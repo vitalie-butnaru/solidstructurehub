@@ -154,13 +154,28 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const storedData = localStorage.getItem('siteData');
     if (storedData) {
-      setSiteData(JSON.parse(storedData));
+      try {
+        const parsedData = JSON.parse(storedData);
+        setSiteData(parsedData);
+      } catch (error) {
+        console.error("Error parsing stored site data:", error);
+        // Fallback to initial data if parsing fails
+        localStorage.setItem('siteData', JSON.stringify(initialSiteData));
+      }
+    } else {
+      // If no data in localStorage, initialize it
+      localStorage.setItem('siteData', JSON.stringify(initialSiteData));
     }
   }, []);
 
   // Salvăm datele în localStorage când se modifică
   useEffect(() => {
-    localStorage.setItem('siteData', JSON.stringify(siteData));
+    try {
+      localStorage.setItem('siteData', JSON.stringify(siteData));
+      console.log("Data saved to localStorage:", siteData);
+    } catch (error) {
+      console.error("Error saving site data:", error);
+    }
   }, [siteData]);
 
   // Funcție pentru autentificare

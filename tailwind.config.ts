@@ -19,6 +19,15 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Inter', 'system-ui', 'sans-serif'],
+				serif: ['Georgia', 'serif'],
+				mono: ['Menlo', 'Monaco', 'Courier New', 'monospace'],
+				roboto: ['Roboto', 'sans-serif'],
+				poppins: ['Poppins', 'sans-serif'],
+				oswald: ['Oswald', 'sans-serif'],
+				playfair: ['Playfair Display', 'serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',

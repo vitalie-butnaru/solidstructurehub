@@ -5,15 +5,80 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SiteData } from "@/contexts/SiteContext";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface ContactEditorProps {
   data: SiteData["contact"];
   onSave: (data: SiteData["contact"]) => void;
 }
 
+// Font options
+const fontOptions = [
+  { value: "font-sans", label: "Sans Serif (Default)" },
+  { value: "font-serif", label: "Serif" },
+  { value: "font-mono", label: "Monospace" },
+  { value: "font-roboto", label: "Roboto" },
+  { value: "font-poppins", label: "Poppins" },
+  { value: "font-oswald", label: "Oswald" },
+  { value: "font-playfair", label: "Playfair Display" },
+];
+
+// Font size options
+const fontSizeOptions = [
+  { value: "text-sm", label: "Small" },
+  { value: "text-base", label: "Normal" },
+  { value: "text-lg", label: "Large" },
+  { value: "text-xl", label: "Extra Large" },
+  { value: "text-2xl", label: "2X Large" },
+];
+
+// Color options
+const colorOptions = [
+  { value: "text-gray-800", label: "Gray (Default)" },
+  { value: "text-blue-600", label: "Blue" },
+  { value: "text-green-600", label: "Green" },
+  { value: "text-red-600", label: "Red" },
+  { value: "text-purple-600", label: "Purple" },
+  { value: "text-yellow-600", label: "Yellow" },
+  { value: "text-pink-600", label: "Pink" },
+  { value: "text-teal-600", label: "Teal" },
+];
+
+// Background color options
+const bgColorOptions = [
+  { value: "bg-white", label: "White (Default)" },
+  { value: "bg-gray-50", label: "Light Gray" },
+  { value: "bg-blue-50", label: "Light Blue" },
+  { value: "bg-green-50", label: "Light Green" },
+  { value: "bg-red-50", label: "Light Red" },
+  { value: "bg-yellow-50", label: "Light Yellow" },
+  { value: "bg-purple-50", label: "Light Purple" },
+  { value: "bg-pink-50", label: "Light Pink" },
+];
+
+// Extended contact data with styling options
+interface ExtendedContactData extends SiteData["contact"] {
+  styles?: {
+    titleFont?: string;
+    titleSize?: string;
+    titleColor?: string;
+    sectionBg?: string;
+    contentFont?: string;
+    contentSize?: string;
+    contentColor?: string;
+  };
+}
+
 const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
-  // Create a proper copy of the data object to avoid type issues
-  const [formData, setFormData] = useState<SiteData["contact"]>({
+  // Create a proper copy of the data object with styling defaults
+  const [formData, setFormData] = useState<ExtendedContactData>({
     title: data.title,
     description: data.description,
     info: {
@@ -25,6 +90,15 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
       weekdays: data.schedule.weekdays,
       saturday: data.schedule.saturday,
       sunday: data.schedule.sunday,
+    },
+    styles: data.styles || {
+      titleFont: "font-sans",
+      titleSize: "text-xl",
+      titleColor: "text-gray-800",
+      sectionBg: "bg-white",
+      contentFont: "font-sans",
+      contentSize: "text-base",
+      contentColor: "text-gray-800",
     }
   });
 
@@ -51,6 +125,14 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
             [field]: value
           }
         }));
+      } else if (section === 'styles') {
+        setFormData(prev => ({
+          ...prev,
+          styles: {
+            ...prev.styles,
+            [field]: value
+          }
+        }));
       }
     } else {
       setFormData(prev => ({
@@ -58,6 +140,34 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
         [name]: value
       }));
     }
+  };
+
+  const handleStyleChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      styles: {
+        ...prev.styles,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleTestLinks = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9+\-\s()]+$/;
+    
+    // Email validation
+    if (!emailRegex.test(formData.info.email)) {
+      toast.error("Formatul adresei de email este invalid!");
+      return;
+    }
+    
+    // Phone validation
+    if (!phoneRegex.test(formData.info.phone)) {
+      toast.warning("Formatul numărului de telefon poate fi invalid!");
+    }
+    
+    toast.success("Toate linkurile sunt valide și pot fi folosite!");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -70,6 +180,155 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
       <h2 className="text-xl font-semibold mb-4">Editare Secțiune Contact</h2>
 
       <div className="space-y-6">
+        <div className="space-y-4 p-4 border rounded-md">
+          <h3 className="text-lg font-medium">Stilizare secțiune</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="titleFont">Font titlu</Label>
+              <Select 
+                value={formData.styles?.titleFont || "font-sans"}
+                onValueChange={(value) => handleStyleChange('titleFont', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Alege fontul" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="titleSize">Mărime titlu</Label>
+              <Select 
+                value={formData.styles?.titleSize || "text-xl"}
+                onValueChange={(value) => handleStyleChange('titleSize', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Alege mărimea" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontSizeOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="titleColor">Culoare titlu</Label>
+              <Select 
+                value={formData.styles?.titleColor || "text-gray-800"}
+                onValueChange={(value) => handleStyleChange('titleColor', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Alege culoarea" />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="sectionBg">Culoare fundal</Label>
+              <Select 
+                value={formData.styles?.sectionBg || "bg-white"}
+                onValueChange={(value) => handleStyleChange('sectionBg', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Alege culoarea de fundal" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bgColorOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="contentFont">Font conținut</Label>
+              <Select 
+                value={formData.styles?.contentFont || "font-sans"}
+                onValueChange={(value) => handleStyleChange('contentFont', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Alege fontul" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="contentSize">Mărime conținut</Label>
+              <Select 
+                value={formData.styles?.contentSize || "text-base"}
+                onValueChange={(value) => handleStyleChange('contentSize', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Alege mărimea" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontSizeOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="contentColor">Culoare conținut</Label>
+              <Select 
+                value={formData.styles?.contentColor || "text-gray-800"}
+                onValueChange={(value) => handleStyleChange('contentColor', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Alege culoarea" />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="md:col-span-2">
+              <div className={`p-4 rounded-md ${formData.styles?.sectionBg || 'bg-white'} border`}>
+                <p className={`${formData.styles?.titleFont || 'font-sans'} ${formData.styles?.titleSize || 'text-xl'} ${formData.styles?.titleColor || 'text-gray-800'} font-bold`}>
+                  {formData.title || 'Titlu secțiune'}
+                </p>
+                <p className={`${formData.styles?.contentFont || 'font-sans'} ${formData.styles?.contentSize || 'text-base'} ${formData.styles?.contentColor || 'text-gray-800'} mt-2`}>
+                  {formData.description || 'Descrierea secțiunii...'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Informații generale</h3>
           <div className="grid grid-cols-1 gap-4">
@@ -174,7 +433,14 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={handleTestLinks}
+        >
+          Testează linkurile
+        </Button>
         <Button type="submit" className="bg-construction-accent">
           Salvează modificările
         </Button>
