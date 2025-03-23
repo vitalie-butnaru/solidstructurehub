@@ -20,7 +20,16 @@ const ProjectsCarousel = () => {
 
   return (
     <section id="proiecte" className="relative w-full h-[70vh] overflow-hidden bg-construction-900">
-      <Carousel className="w-full h-full" setActiveIndex={setActiveIndex} activeIndex={activeIndex}>
+      <div className="absolute top-0 left-0 w-full z-10 bg-construction-900 text-white text-center py-8">
+        <div className="container">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">PROIECTELE NOASTRE</h2>
+          <p className="text-construction-100 max-w-2xl mx-auto">
+            Explorează o selecție din proiectele noastre de succes care demonstrează expertiza și calitatea serviciilor noastre
+          </p>
+        </div>
+      </div>
+
+      <Carousel className="w-full h-full mt-24" setActiveIndex={setActiveIndex} activeIndex={activeIndex}>
         <CarouselContent className="h-full">
           {projects.map((project, index) => (
             <CarouselItem key={project.id} className="h-full">
