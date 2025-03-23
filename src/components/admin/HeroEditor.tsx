@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SiteData } from "@/contexts/SiteContext";
-import { Plus, Trash } from "lucide-react";
+import { Plus, Trash, Image } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 interface HeroEditorProps {
   data: SiteData["hero"];
@@ -14,6 +15,7 @@ interface HeroEditorProps {
 
 const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
   const [formData, setFormData] = useState({ ...data });
+  const [previewDuration, setPreviewDuration] = useState(3);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -57,6 +59,10 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
     });
   };
 
+  // Simulează previzualizarea slider-ului
+  const [previewIndex, setPreviewIndex] = useState(0);
+  const allPreviewImages = [formData.backgroundImage, ...formData.additionalImages].filter(Boolean);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">Editare Secțiune Hero</h2>
@@ -71,6 +77,7 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
               value={formData.subtitle}
               onChange={handleChange}
               required
+              className="animate-fade-in"
             />
           </div>
 
@@ -82,6 +89,7 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
               value={formData.title}
               onChange={handleChange}
               required
+              className="animate-fade-in animate-delay-100"
             />
           </div>
 
@@ -93,6 +101,7 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
               value={formData.description}
               onChange={handleChange}
               required
+              className="animate-fade-in animate-delay-200"
             />
           </div>
 
@@ -104,82 +113,136 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
               value={formData.ctaText}
               onChange={handleChange}
               required
+              className="animate-fade-in animate-delay-300"
             />
           </div>
 
-          <div>
-            <Label htmlFor="backgroundImage">URL imagine fundal principală</Label>
-            <Input
-              id="backgroundImage"
-              name="backgroundImage"
-              value={formData.backgroundImage}
-              onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-              required
-            />
-            {formData.backgroundImage && (
-              <div className="mt-2 h-24 rounded-md overflow-hidden">
+          <div className="border p-4 rounded-lg space-y-4 bg-gray-50 animate-fade-in animate-delay-400">
+            <h3 className="font-medium">Imagini Hero Slider</h3>
+            
+            {allPreviewImages.length > 0 && (
+              <div className="relative h-40 rounded-md overflow-hidden mb-4 shadow-md">
                 <img 
-                  src={formData.backgroundImage} 
-                  alt="Background Preview" 
+                  src={allPreviewImages[previewIndex]} 
+                  alt="Imagine actuală" 
                   className="w-full h-full object-cover"
                 />
+                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2">
+                  {allPreviewImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setPreviewIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        idx === previewIndex ? "w-6 bg-construction-accent" : "bg-white/60"
+                      }`}
+                      aria-label={`Previzualizare imaginea ${idx + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
             )}
-            <p className="text-sm text-gray-500 mt-1">
-              Introduceți URL-ul unei imagini (de preferință de pe Unsplash sau alt serviciu)
-            </p>
-          </div>
 
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <Label>Imagini suplimentare pentru slider</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleAddAdditionalImage}
-                className="flex items-center gap-1"
-              >
-                <Plus className="h-4 w-4" /> Adaugă imagine
-              </Button>
-            </div>
-
-            {formData.additionalImages.map((image, index) => (
-              <div key={index} className="flex gap-2 items-start">
-                <div className="flex-1">
-                  <Input
-                    value={image}
-                    onChange={(e) => handleAdditionalImageChange(index, e.target.value)}
-                    placeholder="URL imagine"
-                  />
-                  {image && (
-                    <div className="mt-2 h-16 rounded-md overflow-hidden">
-                      <img 
-                        src={image} 
-                        alt={`Slide ${index + 1}`} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
+            <div>
+              <Label htmlFor="backgroundImage">URL imagine fundal principală</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="backgroundImage"
+                  name="backgroundImage"
+                  value={formData.backgroundImage}
+                  onChange={handleChange}
+                  placeholder="https://example.com/image.jpg"
+                  required
+                  className="flex-1"
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
                   size="icon"
-                  onClick={() => handleRemoveAdditionalImage(index)}
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => setPreviewIndex(0)}
+                  disabled={!formData.backgroundImage}
+                  className="shrink-0"
                 >
-                  <Trash className="h-4 w-4" />
+                  <Image className="h-4 w-4" />
                 </Button>
               </div>
-            ))}
+              {formData.backgroundImage && (
+                <div className="mt-2 h-24 rounded-md overflow-hidden">
+                  <img 
+                    src={formData.backgroundImage} 
+                    alt="Background Preview" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <p className="text-sm text-gray-500 mt-1">
+                Introduceți URL-ul unei imagini (de preferință de pe Unsplash sau alt serviciu)
+              </p>
+            </div>
+
+            <div className="space-y-4 mt-4">
+              <div className="flex justify-between items-center">
+                <Label>Imagini suplimentare pentru slider</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddAdditionalImage}
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-4 w-4" /> Adaugă imagine
+                </Button>
+              </div>
+
+              {formData.additionalImages.map((image, index) => (
+                <div key={index} className="flex gap-2 items-start border-l-2 border-construction-accent/20 pl-3 py-2 hover:border-construction-accent transition-colors">
+                  <div className="flex-1">
+                    <div className="flex gap-2">
+                      <Input
+                        value={image}
+                        onChange={(e) => handleAdditionalImageChange(index, e.target.value)}
+                        placeholder="URL imagine"
+                        className="flex-1"
+                      />
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="icon"
+                        onClick={() => setPreviewIndex(index + 1)}
+                        disabled={!image}
+                        className="shrink-0"
+                      >
+                        <Image className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {image && (
+                      <div className="mt-2 h-16 rounded-md overflow-hidden">
+                        <img 
+                          src={image} 
+                          alt={`Slide ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveAdditionalImage(index)}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit" className="bg-construction-accent">
+        <Button type="submit" className="bg-construction-accent hover:bg-construction-accent/90 transition-colors">
           Salvează modificările
         </Button>
       </div>

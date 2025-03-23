@@ -57,6 +57,7 @@ const ServicesDetailCarousel = ({ service }: ServicesDetailCarouselProps) => {
                   src={image.src}
                   alt={image.alt}
                   className="object-cover w-full h-full transition-transform duration-700 hover:scale-105"
+                  loading="lazy"
                 />
               </div>
             </CarouselItem>

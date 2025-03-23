@@ -19,14 +19,14 @@ const ProjectsCarousel = () => {
   }, [projects.length]);
 
   return (
-    <section className="relative w-full h-[70vh] overflow-hidden bg-construction-900">
+    <section id="proiecte" className="relative w-full h-[70vh] overflow-hidden bg-construction-900">
       <Carousel className="w-full h-full" setActiveIndex={setActiveIndex} activeIndex={activeIndex}>
         <CarouselContent className="h-full">
           {projects.map((project, index) => (
             <CarouselItem key={project.id} className="h-full">
               <div className="relative w-full h-full">
                 <div 
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 transform scale-105"
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 transform scale-105 animate-fade-in"
                   style={{ backgroundImage: `url(${project.imageSrc})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-construction-900/80 to-transparent" />
@@ -41,12 +41,12 @@ const ProjectsCarousel = () => {
                           : "translate-y-10 opacity-0"
                       )}
                     >
-                      <span className="inline-block px-3 py-1 text-sm rounded-full bg-construction-accent/10 text-construction-accent border border-construction-accent/20">
+                      <span className="inline-block px-3 py-1 text-sm rounded-full bg-construction-accent/10 text-construction-accent border border-construction-accent/20 animate-fade-in">
                         Proiect {index + 1}/{projects.length}
                       </span>
-                      <h2 className="text-4xl font-bold text-white">{project.title}</h2>
-                      <p className="text-construction-100 text-lg">{project.description}</p>
-                      <button className="px-6 py-2 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors mt-4">
+                      <h2 className="text-4xl font-bold text-white animate-fade-in animate-delay-200">{project.title}</h2>
+                      <p className="text-construction-100 text-lg animate-fade-in animate-delay-300">{project.description}</p>
+                      <button className="px-6 py-2 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors hover:scale-105 transform duration-200 mt-4 animate-fade-in animate-delay-400">
                         Detalii proiect
                       </button>
                     </div>

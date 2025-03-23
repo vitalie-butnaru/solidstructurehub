@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogClose
 } from "@/components/ui/dialog";
-import { Pencil, Trash, Plus } from 'lucide-react';
+import { Pencil, Trash, Plus, Image, ExternalLink } from 'lucide-react';
 import { SiteData } from "@/contexts/SiteContext";
 
 interface ProjectsEditorProps {
@@ -94,7 +94,24 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h2 className="text-xl font-semibold mb-4">Editare Proiecte</h2>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Editare Secțiune Proiecte</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Aceste proiecte vor apărea în slider-ul de pe pagina principală. 
+            Folosiți imagini mari, de calitate, pentru cele mai bune rezultate.
+          </p>
+        </div>
+        <a 
+          href="#proiecte" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-construction-accent hover:text-construction-accent/80 text-sm flex items-center gap-1"
+        >
+          <span>Vezi secțiunea pe site</span>
+          <ExternalLink className="h-3 w-3" />
+        </a>
+      </div>
 
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -110,11 +127,11 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
           {formData.items.map((item) => (
             <div 
               key={item.id} 
-              className="p-4 border rounded-md bg-gray-50 relative"
+              className="p-4 border rounded-md bg-gray-50 relative hover:shadow-md transition-shadow"
             >
               <div className="absolute top-2 right-2 flex space-x-1">
                 <Button
@@ -144,7 +161,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                   <img 
                     src={item.imageSrc} 
                     alt={item.title} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
                 )}
               </div>
@@ -154,7 +171,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit" className="bg-construction-accent">
+        <Button type="submit" className="bg-construction-accent hover:bg-construction-accent/90 transition-colors">
           Salvează modificările
         </Button>
       </div>
@@ -178,6 +195,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                 value={currentItem?.title || ''}
                 onChange={handleItemChange}
                 required
+                className="animate-fade-in"
               />
             </div>
             
@@ -189,6 +207,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                 value={currentItem?.description || ''}
                 onChange={handleItemChange}
                 required
+                className="animate-fade-in animate-delay-100"
               />
             </div>
             
@@ -201,9 +220,13 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                 onChange={handleItemChange}
                 placeholder="https://example.com/image.jpg"
                 required
+                className="animate-fade-in animate-delay-200"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Pentru cele mai bune rezultate, folosiți imagini landscape (orizontale) de înaltă rezoluție
+              </p>
               {currentItem?.imageSrc && (
-                <div className="mt-2 rounded-md overflow-hidden h-32">
+                <div className="mt-2 rounded-md overflow-hidden h-32 animate-fade-in">
                   <img 
                     src={currentItem.imageSrc}
                     alt="Preview"
@@ -221,7 +244,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
             <Button 
               type="button" 
               onClick={handleSaveItem}
-              className="bg-construction-accent"
+              className="bg-construction-accent hover:bg-construction-accent/90 transition-colors"
             >
               Salvează
             </Button>
