@@ -2,18 +2,17 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose
 } from "@/components/ui/dialog";
 import { Pencil, Trash, Plus, ImagePlus } from 'lucide-react';
 import { SiteData } from "@/contexts/SiteContext";
+import MultilingualInput from "./MultilingualInput";
 
 interface ServicesEditorProps {
   data: SiteData["services"];
@@ -24,22 +23,30 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
   const [formData, setFormData] = useState({ ...data });
   const [currentItem, setCurrentItem] = useState<{
     id: string;
-    title: string;
-    description: string;
+    title: string | { ro: string; en: string; ru: string };
+    description: string | { ro: string; en: string; ru: string };
     imageSrc: string;
     galleryImages: string[];
   } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleMultilingualChange = (field: string, value: { ro: string; en: string; ru: string }) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [field]: value,
     }));
   };
 
-  const handleItemChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleItemMultilingualChange = (field: string, value: { ro: string; en: string; ru: string }) => {
+    if (!currentItem) return;
+    
+    setCurrentItem((prev) => ({
+      ...prev!,
+      [field]: value,
+    }));
+  };
+
+  const handleSimpleItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!currentItem) return;
     
     const { name, value } = e.target;
@@ -62,8 +69,8 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
   const handleAddItem = () => {
     setCurrentItem({
       id: `service-${Date.now()}`,
-      title: '',
-      description: '',
+      title: { ro: '', en: '', ru: '' },
+      description: { ro: '', en: '', ru: '' },
       imageSrc: '',
       galleryImages: [],
     });
@@ -135,32 +142,33 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
     });
   };
 
+  // Helper to get language content for display
+  const getLocalizedContent = (content: string | { ro: string; en: string; ru: string }) => {
+    if (typeof content === 'string') return content;
+    return content.ro || content.en || content.ru || '';
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">Editare Secțiune Servicii</h2>
 
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="title">Titlu secțiune</Label>
-          <Input
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <MultilingualInput
+          id="services-title"
+          label="Titlu secțiune"
+          value={formData.title}
+          onChange={(value) => handleMultilingualChange("title", value)}
+          required={true}
+        />
 
-        <div>
-          <Label htmlFor="description">Descriere secțiune</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <MultilingualInput
+          id="services-description"
+          label="Descriere secțiune"
+          value={formData.description}
+          onChange={(value) => handleMultilingualChange("description", value)}
+          multiline={true}
+          required={true}
+        />
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -203,13 +211,13 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
                   </Button>
                 </div>
                 
-                <h4 className="font-medium text-lg mt-4">{item.title}</h4>
-                <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                <h4 className="font-medium text-lg mt-4">{getLocalizedContent(item.title)}</h4>
+                <p className="text-sm text-gray-600 mt-1">{getLocalizedContent(item.description)}</p>
                 <div className="mt-3 h-24 rounded-md bg-gray-200 overflow-hidden">
                   {item.imageSrc && (
                     <img 
                       src={item.imageSrc} 
-                      alt={item.title} 
+                      alt={getLocalizedContent(item.title)} 
                       className="w-full h-full object-cover"
                     />
                   )}
@@ -244,16 +252,13 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
           
           <div className="space-y-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-title">Titlu</Label>
-                <Input
-                  id="edit-title"
-                  name="title"
-                  value={currentItem?.title || ''}
-                  onChange={handleItemChange}
-                  required
-                />
-              </div>
+              <MultilingualInput
+                id="edit-service-title"
+                label="Titlu"
+                value={currentItem?.title || { ro: '', en: '', ru: '' }}
+                onChange={(value) => handleItemMultilingualChange("title", value)}
+                required={true}
+              />
               
               <div>
                 <Label htmlFor="edit-imageSrc">URL imagine principală</Label>
@@ -261,23 +266,21 @@ const ServicesEditor = ({ data, onSave }: ServicesEditorProps) => {
                   id="edit-imageSrc"
                   name="imageSrc"
                   value={currentItem?.imageSrc || ''}
-                  onChange={handleItemChange}
+                  onChange={handleSimpleItemChange}
                   placeholder="https://example.com/image.jpg"
                   required
                 />
               </div>
             </div>
             
-            <div>
-              <Label htmlFor="edit-description">Descriere</Label>
-              <Textarea
-                id="edit-description"
-                name="description"
-                value={currentItem?.description || ''}
-                onChange={handleItemChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="edit-service-description"
+              label="Descriere"
+              value={currentItem?.description || { ro: '', en: '', ru: '' }}
+              onChange={(value) => handleItemMultilingualChange("description", value)}
+              multiline={true}
+              required={true}
+            />
             
             {currentItem?.imageSrc && (
               <div className="rounded-md overflow-hidden h-32">

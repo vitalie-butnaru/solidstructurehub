@@ -13,31 +13,52 @@ import {
 } from "@/components/ui/dialog";
 import { Pencil, Trash, Plus, Image, ExternalLink } from 'lucide-react';
 import { SiteData } from "@/contexts/SiteContext";
+import MultilingualInput from "./MultilingualInput";
 
 interface ProjectsEditorProps {
   data: SiteData["projects"];
   onSave: (data: SiteData["projects"]) => void;
 }
 
+// Helper type for project item form
+type ProjectItemForm = {
+  id: number;
+  title: string | { ro: string; en: string; ru: string };
+  description: string | { ro: string; en: string; ru: string };
+  imageSrc: string;
+  category?: string | { ro: string; en: string; ru: string };
+  date?: string;
+};
+
+// Helper to ensure we have a multilingual structure
+const ensureMultilingual = (value: string | { ro: string; en: string; ru: string }) => {
+  if (typeof value === 'string') {
+    return { ro: value, en: value, ru: value };
+  }
+  return value;
+};
+
 const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
   const [formData, setFormData] = useState({ ...data });
-  const [currentItem, setCurrentItem] = useState<{
-    id: number;
-    title: string;
-    description: string;
-    imageSrc: string;
-    category?: string;
-    date?: string;
-  } | null>(null);
+  const [currentItem, setCurrentItem] = useState<ProjectItemForm | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleItemChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSimpleItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!currentItem) return;
     
     const { name, value } = e.target;
     setCurrentItem((prev) => ({
       ...prev!,
       [name]: value,
+    }));
+  };
+
+  const handleMultilingualChange = (field: string, value: { ro: string; en: string; ru: string }) => {
+    if (!currentItem) return;
+    
+    setCurrentItem((prev) => ({
+      ...prev!,
+      [field]: value,
     }));
   };
 
@@ -57,10 +78,10 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
     
     setCurrentItem({
       id: maxId + 1,
-      title: '',
-      description: '',
+      title: { ro: '', en: '', ru: '' },
+      description: { ro: '', en: '', ru: '' },
       imageSrc: '',
-      category: '',
+      category: { ro: '', en: '', ru: '' },
       date: '',
     });
     setDialogOpen(true);
@@ -96,23 +117,29 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
     setDialogOpen(false);
   };
 
+  // Helper to get language content for display
+  const getLocalizedContent = (content: string | { ro: string; en: string; ru: string }) => {
+    if (typeof content === 'string') return content;
+    return content.ro || content.en || content.ru || '';
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-xl font-semibold">Editare Secțiune Proiecte</h2>
           <p className="text-sm text-gray-500 mt-1">
-            Aceste proiecte vor apărea în slider-ul de pe pagina principală. 
+            Aceste proiecte vor apărea în slider-ul de pe pagina principală și pe pagina dedicată proiectelor. 
             Folosiți imagini mari, de calitate, pentru cele mai bune rezultate.
           </p>
         </div>
         <a 
-          href="#proiecte" 
+          href="/proiecte" 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-construction-accent hover:text-construction-accent/80 text-sm flex items-center gap-1"
         >
-          <span>Vezi secțiunea pe site</span>
+          <span>Vezi pagina proiecte</span>
           <ExternalLink className="h-3 w-3" />
         </a>
       </div>
@@ -158,15 +185,19 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                 </Button>
               </div>
               
-              <h4 className="font-medium text-lg mt-4">{item.title}</h4>
-              {item.category && <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">{item.category}</span>}
-              <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+              <h4 className="font-medium text-lg mt-4">{getLocalizedContent(item.title)}</h4>
+              {item.category && (
+                <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">
+                  {getLocalizedContent(item.category)}
+                </span>
+              )}
+              <p className="text-sm text-gray-600 mt-1">{getLocalizedContent(item.description)}</p>
               {item.date && <p className="text-xs text-gray-500 mt-1">{item.date}</p>}
               <div className="mt-3 h-32 rounded-md bg-gray-200 overflow-hidden">
                 {item.imageSrc && (
                   <img 
                     src={item.imageSrc} 
-                    alt={item.title} 
+                    alt={getLocalizedContent(item.title)} 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
                 )}
@@ -183,7 +214,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {currentItem && formData.items.some(item => item.id === currentItem.id) 
@@ -193,41 +224,33 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="edit-title">Titlu</Label>
-              <Input
-                id="edit-title"
-                name="title"
-                value={currentItem?.title || ''}
-                onChange={handleItemChange}
-                required
-                className="animate-fade-in"
-              />
-            </div>
+            <MultilingualInput
+              id="edit-title"
+              label="Titlu"
+              value={currentItem?.title || { ro: '', en: '', ru: '' }}
+              onChange={(value) => handleMultilingualChange("title", value)}
+              required={true}
+              className="animate-fade-in"
+            />
             
-            <div>
-              <Label htmlFor="edit-description">Descriere</Label>
-              <Textarea
-                id="edit-description"
-                name="description"
-                value={currentItem?.description || ''}
-                onChange={handleItemChange}
-                required
-                className="animate-fade-in animate-delay-100"
-              />
-            </div>
+            <MultilingualInput
+              id="edit-description"
+              label="Descriere"
+              value={currentItem?.description || { ro: '', en: '', ru: '' }}
+              onChange={(value) => handleMultilingualChange("description", value)}
+              multiline={true}
+              required={true}
+              className="animate-fade-in animate-delay-100"
+            />
             
-            <div>
-              <Label htmlFor="edit-category">Categorie</Label>
-              <Input
-                id="edit-category"
-                name="category"
-                value={currentItem?.category || ''}
-                onChange={handleItemChange}
-                placeholder="Rezidențial, Industrial, etc."
-                className="animate-fade-in animate-delay-150"
-              />
-            </div>
+            <MultilingualInput
+              id="edit-category"
+              label="Categorie"
+              value={currentItem?.category || { ro: '', en: '', ru: '' }}
+              onChange={(value) => handleMultilingualChange("category", value)}
+              placeholder="Rezidențial, Industrial, etc."
+              className="animate-fade-in animate-delay-150"
+            />
             
             <div>
               <Label htmlFor="edit-date">Data proiectului</Label>
@@ -235,7 +258,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                 id="edit-date"
                 name="date"
                 value={currentItem?.date || ''}
-                onChange={handleItemChange}
+                onChange={handleSimpleItemChange}
                 placeholder="Octombrie 2023"
                 className="animate-fade-in animate-delay-150"
               />
@@ -247,7 +270,7 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                 id="edit-imageSrc"
                 name="imageSrc"
                 value={currentItem?.imageSrc || ''}
-                onChange={handleItemChange}
+                onChange={handleSimpleItemChange}
                 placeholder="https://example.com/image.jpg"
                 required
                 className="animate-fade-in animate-delay-200"

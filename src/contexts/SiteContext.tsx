@@ -1,41 +1,49 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
+
+// Types for multilingual content
+type LanguageContent = {
+  ro: string;
+  en: string;
+  ru: string;
+};
 
 // Tipuri pentru datele site-ului
 export interface SiteData {
   hero: {
-    subtitle: string;
-    title: string;
-    description: string;
-    ctaText: string;
+    subtitle: string | LanguageContent;
+    title: string | LanguageContent;
+    description: string | LanguageContent;
+    ctaText: string | LanguageContent;
     backgroundImage: string;
     additionalImages: string[]; // Imagini adiționale pentru slider
   };
   services: {
-    title: string;
-    description: string;
+    title: string | LanguageContent;
+    description: string | LanguageContent;
     items: {
       id: string;
-      title: string;
-      description: string;
+      title: string | LanguageContent;
+      description: string | LanguageContent;
       imageSrc: string;
       galleryImages: string[]; // Galerie de imagini pentru fiecare serviciu
     }[];
   };
   whyChooseUs: {
-    title: string;
-    description: string;
+    title: string | LanguageContent;
+    description: string | LanguageContent;
     benefits: {
       id: string;
-      title: string;
-      description: string;
+      title: string | LanguageContent;
+      description: string | LanguageContent;
     }[];
     backgroundImage: string; // Imagine de fundal pentru secțiunea "De ce să ne alegi"
   };
   contact: {
-    title: string;
-    description: string;
+    title: string | LanguageContent;
+    description: string | LanguageContent;
     info: {
-      location: string;
+      location: string | LanguageContent;
       phone: string;
       email: string;
     };
@@ -56,28 +64,52 @@ export interface SiteData {
   };
   footer: {
     companyName: string;
-    description: string;
-    copyright: string;
+    description: string | LanguageContent;
+    copyright: string | LanguageContent;
   };
   projects: {
     items: {
       id: number;
-      title: string;
-      description: string;
+      title: string | LanguageContent;
+      description: string | LanguageContent;
       imageSrc: string;
-      category?: string;
+      category?: string | LanguageContent;
       date?: string;
     }[];
   };
 }
 
+// Helper function to convert string to multilingual object if needed
+const ensureMultilingual = (content: string | LanguageContent): LanguageContent => {
+  if (typeof content === 'string') {
+    return { ro: content, en: content, ru: content };
+  }
+  return content;
+};
+
 // Date inițiale
 const initialSiteData: SiteData = {
   hero: {
-    subtitle: 'CONSTRUCȚII INDUSTRIALE ȘI REZIDENȚIALE',
-    title: 'Construim viitorul, cu structuri solide și durabile.',
-    description: 'Oferim servicii complete de construcții industriale și rezidențiale, adaptate nevoilor tale.',
-    ctaText: 'Descoperă serviciile',
+    subtitle: {
+      ro: 'CONSTRUCȚII INDUSTRIALE ȘI REZIDENȚIALE',
+      en: 'INDUSTRIAL AND RESIDENTIAL CONSTRUCTION',
+      ru: 'ПРОМЫШЛЕННОЕ И ЖИЛИЩНОЕ СТРОИТЕЛЬСТВО'
+    },
+    title: {
+      ro: 'Construim viitorul, cu structuri solide și durabile.',
+      en: 'Building the future with solid and durable structures.',
+      ru: 'Строим будущее с прочными и долговечными конструкциями.'
+    },
+    description: {
+      ro: 'Oferim servicii complete de construcții industriale și rezidențiale, adaptate nevoilor tale.',
+      en: 'We offer complete industrial and residential construction services, tailored to your needs.',
+      ru: 'Мы предлагаем полный спектр услуг промышленного и жилищного строительства, адаптированных к вашим потребностям.'
+    },
+    ctaText: {
+      ro: 'Descoperă serviciile',
+      en: 'Discover services',
+      ru: 'Ознакомьтесь с услугами'
+    },
     backgroundImage: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c77',
     additionalImages: [
       'https://images.unsplash.com/photo-1541992808222-3bbeb087cfa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
@@ -85,13 +117,29 @@ const initialSiteData: SiteData = {
     ]
   },
   services: {
-    title: 'SERVICIILE NOASTRE',
-    description: 'Folosim materiale de calitate și tehnologie modernă pentru a livra construcții sigure și eficiente.',
+    title: {
+      ro: 'SERVICIILE NOASTRE',
+      en: 'OUR SERVICES',
+      ru: 'НАШИ УСЛУГИ'
+    },
+    description: {
+      ro: 'Folosim materiale de calitate și tehnologie modernă pentru a livra construcții sigure și eficiente.',
+      en: 'We use quality materials and modern technology to deliver safe and efficient constructions.',
+      ru: 'Мы используем качественные материалы и современные технологии для создания безопасных и эффективных конструкций.'
+    },
     items: [
       {
         id: 'industrial',
-        title: 'Hale industriale',
-        description: 'De la boxe auto și depozite, până la supermarketuri și fabrici.',
+        title: {
+          ro: 'Hale industriale',
+          en: 'Industrial halls',
+          ru: 'Промышленные залы'
+        },
+        description: {
+          ro: 'De la boxe auto și depozite, până la supermarketuri și fabrici.',
+          en: 'From auto garages and warehouses to supermarkets and factories.',
+          ru: 'От автогаражей и складов до супермаркетов и фабрик.'
+        },
         imageSrc: 'https://images.unsplash.com/photo-1598257006626-48b0c252070d',
         galleryImages: [
           'https://images.unsplash.com/photo-1599809275671-b5942cabc7a2',
@@ -100,8 +148,16 @@ const initialSiteData: SiteData = {
       },
       {
         id: 'commercial',
-        title: 'Clădiri comerciale',
-        description: 'Spații de producție, centre logistice, showroom-uri.',
+        title: {
+          ro: 'Clădiri comerciale',
+          en: 'Commercial buildings',
+          ru: 'Коммерческие здания'
+        },
+        description: {
+          ro: 'Spații de producție, centre logistice, showroom-uri.',
+          en: 'Production spaces, logistics centers, showrooms.',
+          ru: 'Производственные помещения, логистические центры, выставочные залы.'
+        },
         imageSrc: 'https://images.unsplash.com/photo-1556156653-e5a7c69cc4c5',
         galleryImages: [
           'https://images.unsplash.com/photo-1561133036-61a7ed56b424',
@@ -110,8 +166,16 @@ const initialSiteData: SiteData = {
       },
       {
         id: 'residential',
-        title: 'Construcții rezidențiale',
-        description: 'Case de vacanță, locuințe unifamiliale și ansambluri rezidențiale.',
+        title: {
+          ro: 'Construcții rezidențiale',
+          en: 'Residential constructions',
+          ru: 'Жилищное строительство'
+        },
+        description: {
+          ro: 'Case de vacanță, locuințe unifamiliale și ansambluri rezidențiale.',
+          en: 'Vacation homes, single-family homes, and residential complexes.',
+          ru: 'Дома для отдыха, частные дома и жилые комплексы.'
+        },
         imageSrc: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811',
         galleryImages: [
           'https://images.unsplash.com/photo-1600585154340-be6161a56a0c',
@@ -121,37 +185,89 @@ const initialSiteData: SiteData = {
     ],
   },
   whyChooseUs: {
-    title: 'DE CE SĂ NE ALEGI?',
-    description: 'Suntem dedicați excelenței în fiecare aspect al activității noastre',
+    title: {
+      ro: 'DE CE SĂ NE ALEGI?',
+      en: 'WHY CHOOSE US?',
+      ru: 'ПОЧЕМУ ВЫБИРАЮТ НАС?'
+    },
+    description: {
+      ro: 'Suntem dedicați excelenței în fiecare aspect al activității noastre',
+      en: 'We are dedicated to excellence in every aspect of our activity',
+      ru: 'Мы стремимся к совершенству во всех аспектах нашей деятельности'
+    },
     benefits: [
       {
         id: 'experience',
-        title: 'Experiență în proiecte industriale și rezidențiale',
-        description: 'Echipa noastră de experți are ani de experiență în domeniul construcțiilor.',
+        title: {
+          ro: 'Experiență în proiecte industriale și rezidențiale',
+          en: 'Experience in industrial and residential projects',
+          ru: 'Опыт работы с промышленными и жилыми проектами'
+        },
+        description: {
+          ro: 'Echipa noastră de experți are ani de experiență în domeniul construcțiilor.',
+          en: 'Our team of experts has years of experience in the construction field.',
+          ru: 'Наша команда экспертов имеет многолетний опыт в области строительства.'
+        },
       },
       {
         id: 'deadlines',
-        title: 'Respectăm termenele de execuție',
-        description: 'Ne angajăm să livrăm proiectele la timp, respectând termenele stabilite.',
+        title: {
+          ro: 'Respectăm termenele de execuție',
+          en: 'We respect execution deadlines',
+          ru: 'Мы соблюдаем сроки выполнения'
+        },
+        description: {
+          ro: 'Ne angajăm să livrăm proiectele la timp, respectând termenele stabilite.',
+          en: 'We commit to delivering projects on time, respecting established deadlines.',
+          ru: 'Мы обязуемся доставлять проекты вовремя, соблюдая установленные сроки.'
+        },
       },
       {
         id: 'quality',
-        title: 'Calitate și profesionalism garantate',
-        description: 'Lucrăm doar cu materiale premium și tehnici moderne de construcție.',
+        title: {
+          ro: 'Calitate și profesionalism garantate',
+          en: 'Guaranteed quality and professionalism',
+          ru: 'Гарантированное качество и профессионализм'
+        },
+        description: {
+          ro: 'Lucrăm doar cu materiale premium și tehnici moderne de construcție.',
+          en: 'We work only with premium materials and modern construction techniques.',
+          ru: 'Мы работаем только с материалами премиум-класса и современными технологиями строительства.'
+        },
       },
       {
         id: 'solutions',
-        title: 'Soluții personalizate pentru fiecare client',
-        description: 'Adaptăm serviciile noastre pentru a răspunde nevoilor specifice ale fiecărui client.',
+        title: {
+          ro: 'Soluții personalizate pentru fiecare client',
+          en: 'Customized solutions for each client',
+          ru: 'Индивидуальные решения для каждого клиента'
+        },
+        description: {
+          ro: 'Adaptăm serviciile noastre pentru a răspunde nevoilor specifice ale fiecărui client.',
+          en: 'We adapt our services to meet the specific needs of each client.',
+          ru: 'Мы адаптируем наши услуги для удовлетворения конкретных потребностей каждого клиента.'
+        },
       },
     ],
     backgroundImage: 'https://images.unsplash.com/photo-1553545985-1e0d8781d5db',
   },
   contact: {
-    title: 'CONTACT',
-    description: 'Suntem aici pentru a răspunde întrebărilor tale și pentru a-ți oferi soluții personalizate',
+    title: {
+      ro: 'CONTACT',
+      en: 'CONTACT',
+      ru: 'КОНТАКТЫ'
+    },
+    description: {
+      ro: 'Suntem aici pentru a răspunde întrebărilor tale și pentru a-ți oferi soluții personalizate',
+      en: 'We are here to answer your questions and provide you with customized solutions',
+      ru: 'Мы здесь, чтобы ответить на ваши вопросы и предложить вам индивидуальные решения'
+    },
     info: {
-      location: '[Adresa ta aici]',
+      location: {
+        ro: '[Adresa ta aici]',
+        en: '[Your address here]',
+        ru: '[Ваш адрес здесь]'
+      },
       phone: '[Numărul tău de contact]',
       email: '[Adresa ta de email]',
     },
@@ -172,41 +288,97 @@ const initialSiteData: SiteData = {
   },
   footer: {
     companyName: 'CONSTRUCTPRO',
-    description: 'Construim viitorul, cu structuri solide și durabile. Oferim servicii complete de construcții industriale și rezidențiale.',
-    copyright: `© ${new Date().getFullYear()} ConstructPro. Toate drepturile rezervate.`,
+    description: {
+      ro: 'Construim viitorul, cu structuri solide și durabile. Oferim servicii complete de construcții industriale și rezidențiale.',
+      en: 'Building the future with solid and durable structures. We offer complete industrial and residential construction services.',
+      ru: 'Строим будущее с прочными и долговечными конструкциями. Мы предлагаем полный спектр услуг промышленного и жилищного строительства.'
+    },
+    copyright: {
+      ro: `© ${new Date().getFullYear()} ConstructPro. Toate drepturile rezervate.`,
+      en: `© ${new Date().getFullYear()} ConstructPro. All rights reserved.`,
+      ru: `© ${new Date().getFullYear()} ConstructPro. Все права защищены.`
+    },
   },
   projects: {
     items: [
       {
         id: 1,
-        title: 'Complex Rezidențial Modern',
-        description: 'Ansamblu de locuințe cu design contemporan și facilități premium.',
+        title: {
+          ro: 'Complex Rezidențial Modern',
+          en: 'Modern Residential Complex',
+          ru: 'Современный жилой комплекс'
+        },
+        description: {
+          ro: 'Ansamblu de locuințe cu design contemporan și facilități premium.',
+          en: 'Housing complex with contemporary design and premium facilities.',
+          ru: 'Жилой комплекс с современным дизайном и премиум-удобствами.'
+        },
         imageSrc: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-        category: 'Rezidențial',
+        category: {
+          ro: 'Rezidențial',
+          en: 'Residential',
+          ru: 'Жилой'
+        },
         date: 'Decembrie 2023',
       },
       {
         id: 2,
-        title: 'Centru Comercial',
-        description: 'Spațiu comercial amplu cu zone de retail și divertisment.',
+        title: {
+          ro: 'Centru Comercial',
+          en: 'Shopping Center',
+          ru: 'Торговый центр'
+        },
+        description: {
+          ro: 'Spațiu comercial amplu cu zone de retail și divertisment.',
+          en: 'Large commercial space with retail and entertainment areas.',
+          ru: 'Большое коммерческое пространство с зонами розничной торговли и развлечений.'
+        },
         imageSrc: 'https://images.unsplash.com/photo-1555636222-cae831e670b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-        category: 'Comercial',
+        category: {
+          ro: 'Comercial',
+          en: 'Commercial',
+          ru: 'Коммерческий'
+        },
         date: 'Octombrie 2023',
       },
       {
         id: 3,
-        title: 'Hală Industrială',
-        description: 'Construcție industrială modernă cu spații optimizate pentru producție.',
+        title: {
+          ro: 'Hală Industrială',
+          en: 'Industrial Hall',
+          ru: 'Промышленный зал'
+        },
+        description: {
+          ro: 'Construcție industrială modernă cu spații optimizate pentru producție.',
+          en: 'Modern industrial construction with spaces optimized for production.',
+          ru: 'Современная промышленная конструкция с оптимизированными для производства пространствами.'
+        },
         imageSrc: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-        category: 'Industrial',
+        category: {
+          ro: 'Industrial',
+          en: 'Industrial',
+          ru: 'Промышленный'
+        },
         date: 'August 2023',
       },
       {
         id: 4,
-        title: 'Parc Logistic',
-        description: 'Centru logistic cu depozite și platformă de distribuție.',
+        title: {
+          ro: 'Parc Logistic',
+          en: 'Logistics Park',
+          ru: 'Логистический парк'
+        },
+        description: {
+          ro: 'Centru logistic cu depozite și platformă de distribuție.',
+          en: 'Logistics center with warehouses and distribution platform.',
+          ru: 'Логистический центр со складами и платформой распределения.'
+        },
         imageSrc: 'https://images.unsplash.com/photo-1553678324-a6e43e20882a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
-        category: 'Logistic',
+        category: {
+          ro: 'Logistic',
+          en: 'Logistics',
+          ru: 'Логистический'
+        },
         date: 'Martie 2023',
       },
     ],

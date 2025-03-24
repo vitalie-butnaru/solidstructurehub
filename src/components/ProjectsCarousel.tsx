@@ -6,6 +6,13 @@ import { useSite } from '@/contexts/SiteContext';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
 
+// Helper to get content based on language
+const getLocalizedContent = (content: string | { ro: string; en: string; ru: string } | undefined, lang: string): string => {
+  if (!content) return '';
+  if (typeof content === 'string') return content;
+  return content[lang as keyof typeof content] || content.ro || '';
+};
+
 const ProjectsCarousel = () => {
   const { siteData } = useSite();
   const projects = siteData.projects.items;
@@ -46,18 +53,22 @@ const ProjectsCarousel = () => {
                     <div className="relative h-60 overflow-hidden">
                       <img 
                         src={project.imageSrc} 
-                        alt={project.title} 
+                        alt={getLocalizedContent(project.title, lang)} 
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
                       {project.category && (
                         <div className="absolute top-3 right-3 bg-construction-accent/90 text-white px-3 py-1 rounded-full text-xs font-medium">
-                          {project.category}
+                          {getLocalizedContent(project.category, lang)}
                         </div>
                       )}
                     </div>
                     <div className="p-5 flex-grow flex flex-col">
-                      <h3 className="text-xl font-semibold text-construction-900 mb-2">{project.title}</h3>
-                      <p className="text-construction-600 flex-grow">{project.description}</p>
+                      <h3 className="text-xl font-semibold text-construction-900 mb-2">
+                        {getLocalizedContent(project.title, lang)}
+                      </h3>
+                      <p className="text-construction-600 flex-grow">
+                        {getLocalizedContent(project.description, lang)}
+                      </p>
                       {project.date && (
                         <div className="mt-3 text-sm text-construction-500">
                           {project.date}
@@ -89,7 +100,7 @@ const ProjectsCarousel = () => {
         
         {/* View All Projects button */}
         <div className="flex justify-center mt-8">
-          <Link to="/proiecte">
+          <Link to={`/proiecte?lang=${lang}`}>
             <Button
               className="bg-construction-accent hover:bg-construction-accent/90 text-white"
             >
