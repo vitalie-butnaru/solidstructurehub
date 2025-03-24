@@ -26,6 +26,8 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
     title: string;
     description: string;
     imageSrc: string;
+    category?: string;
+    date?: string;
   } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -58,6 +60,8 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
       title: '',
       description: '',
       imageSrc: '',
+      category: '',
+      date: '',
     });
     setDialogOpen(true);
   };
@@ -155,7 +159,9 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
               </div>
               
               <h4 className="font-medium text-lg mt-4">{item.title}</h4>
+              {item.category && <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">{item.category}</span>}
               <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+              {item.date && <p className="text-xs text-gray-500 mt-1">{item.date}</p>}
               <div className="mt-3 h-32 rounded-md bg-gray-200 overflow-hidden">
                 {item.imageSrc && (
                   <img 
@@ -208,6 +214,30 @@ const ProjectsEditor = ({ data, onSave }: ProjectsEditorProps) => {
                 onChange={handleItemChange}
                 required
                 className="animate-fade-in animate-delay-100"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="edit-category">Categorie</Label>
+              <Input
+                id="edit-category"
+                name="category"
+                value={currentItem?.category || ''}
+                onChange={handleItemChange}
+                placeholder="Rezidențial, Industrial, etc."
+                className="animate-fade-in animate-delay-150"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="edit-date">Data proiectului</Label>
+              <Input
+                id="edit-date"
+                name="date"
+                value={currentItem?.date || ''}
+                onChange={handleItemChange}
+                placeholder="Octombrie 2023"
+                className="animate-fade-in animate-delay-150"
               />
             </div>
             
