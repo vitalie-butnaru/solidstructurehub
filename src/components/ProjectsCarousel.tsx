@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSite } from '@/contexts/SiteContext';
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,8 @@ const ProjectsCarousel = () => {
   const { siteData } = useSite();
   const projects = siteData.projects.items;
   const [activeIndex, setActiveIndex] = useState(0);
+  const [searchParams] = useSearchParams();
+  const lang = searchParams.get("lang") || "ro";
 
   if (!projects || projects.length === 0) {
     return null;
@@ -18,9 +21,15 @@ const ProjectsCarousel = () => {
     <section id="proiecte" className="py-16 bg-construction-50">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-construction-900 mb-4">PROIECTELE NOASTRE</h2>
+          <h2 className="text-3xl font-bold text-construction-900 mb-4">
+            {lang === "ro" ? "PROIECTELE NOASTRE" : 
+             lang === "en" ? "OUR PROJECTS" : 
+             "НАШИ ПРОЕКТЫ"}
+          </h2>
           <p className="text-construction-600 max-w-2xl mx-auto">
-            Descoperă o selecție din proiectele noastre reprezentative, realizate cu profesionalism și atenție la detalii.
+            {lang === "ro" ? "Descoperă o selecție din proiectele noastre reprezentative, realizate cu profesionalism și atenție la detalii." : 
+             lang === "en" ? "Discover a selection of our representative projects, completed with professionalism and attention to detail." : 
+             "Откройте для себя подборку наших знаковых проектов, выполненных с профессионализмом и вниманием к деталям."}
           </p>
         </div>
 
@@ -80,15 +89,15 @@ const ProjectsCarousel = () => {
         
         {/* View All Projects button */}
         <div className="flex justify-center mt-8">
-          <Button
-            className="bg-construction-accent hover:bg-construction-accent/90 text-white"
-            onClick={() => {
-              // This could link to a dedicated projects page in the future
-              window.location.href = "#proiecte";
-            }}
-          >
-            Vezi Toate Proiectele <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link to="/proiecte">
+            <Button
+              className="bg-construction-accent hover:bg-construction-accent/90 text-white"
+            >
+              {lang === "ro" ? "Vezi Toate Proiectele" : 
+               lang === "en" ? "View All Projects" : 
+               "Посмотреть все проекты"} <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { SiteData } from "@/contexts/SiteContext";
@@ -16,6 +17,9 @@ const ContactSection = ({ data }: ContactSectionProps) => {
     phone: "",
     message: "",
   });
+  const formRef = useRef<HTMLFormElement>(null);
+  const [searchParams] = useSearchParams();
+  const lang = searchParams.get("lang") || "ro";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -28,8 +32,10 @@ const ContactSection = ({ data }: ContactSectionProps) => {
     // Simple validation
     if (!formData.name || !formData.email || !formData.message) {
       toast({
-        title: "Eroare",
-        description: "Vă rugăm să completați toate câmpurile obligatorii.",
+        title: lang === "ro" ? "Eroare" : lang === "en" ? "Error" : "Ошибка",
+        description: lang === "ro" ? "Vă rugăm să completați toate câmpurile obligatorii." : 
+                     lang === "en" ? "Please fill in all required fields." : 
+                     "Пожалуйста, заполните все обязательные поля.",
         variant: "destructive",
       });
       return;
@@ -40,8 +46,10 @@ const ContactSection = ({ data }: ContactSectionProps) => {
     
     // Show success message
     toast({
-      title: "Mesaj trimis",
-      description: "Vă mulțumim! Vă vom contacta în curând.",
+      title: lang === "ro" ? "Mesaj trimis" : lang === "en" ? "Message sent" : "Сообщение отправлено",
+      description: lang === "ro" ? "Vă mulțumim! Vă vom contacta în curând." :
+                   lang === "en" ? "Thank you! We will contact you soon." :
+                   "Спасибо! Мы свяжемся с вами в ближайшее время.",
     });
     
     // Reset form
@@ -53,22 +61,47 @@ const ContactSection = ({ data }: ContactSectionProps) => {
     });
   };
 
+  const scrollToForm = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth' });
+      // Focus on the first input
+      const firstInput = formRef.current.querySelector('input') as HTMLInputElement;
+      if (firstInput) {
+        setTimeout(() => firstInput.focus(), 500);
+      }
+    }
+  };
+
   return (
     <section id="contact" className="py-24 bg-construction-50">
       <div className="container">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-construction-900 mb-4">{data.title}</h2>
-          <p className="text-construction-600">{data.description}</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-construction-900 mb-4">
+            {lang === "ro" ? data.title : 
+             lang === "en" ? "CONTACT" : 
+             "КОНТАКТЫ"}
+          </h2>
+          <p className="text-construction-600">
+            {lang === "ro" ? data.description : 
+             lang === "en" ? "We are here to answer your questions and provide you with customized solutions" : 
+             "Мы здесь, чтобы ответить на ваши вопросы и предложить индивидуальные решения"}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="bg-white p-8 rounded-xl shadow-lg">
-            <h3 className="text-2xl font-semibold text-construction-900 mb-6">Trimite-ne un mesaj</h3>
+            <h3 className="text-2xl font-semibold text-construction-900 mb-6">
+              {lang === "ro" ? "Trimite-ne un mesaj" : 
+               lang === "en" ? "Send us a message" : 
+               "Отправьте нам сообщение"}
+            </h3>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-construction-700 mb-1">
-                  Nume complet *
+                  {lang === "ro" ? "Nume complet *" : 
+                   lang === "en" ? "Full name *" : 
+                   "Полное имя *"}
                 </label>
                 <input
                   type="text"
@@ -83,7 +116,9 @@ const ContactSection = ({ data }: ContactSectionProps) => {
               
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-construction-700 mb-1">
-                  Email *
+                  {lang === "ro" ? "Email *" : 
+                   lang === "en" ? "Email *" : 
+                   "Эл. почта *"}
                 </label>
                 <input
                   type="email"
@@ -98,7 +133,9 @@ const ContactSection = ({ data }: ContactSectionProps) => {
               
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-construction-700 mb-1">
-                  Telefon
+                  {lang === "ro" ? "Telefon" : 
+                   lang === "en" ? "Phone" : 
+                   "Телефон"}
                 </label>
                 <input
                   type="tel"
@@ -112,7 +149,9 @@ const ContactSection = ({ data }: ContactSectionProps) => {
               
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-construction-700 mb-1">
-                  Mesaj *
+                  {lang === "ro" ? "Mesaj *" : 
+                   lang === "en" ? "Message *" : 
+                   "Сообщение *"}
                 </label>
                 <textarea
                   id="message"
@@ -129,23 +168,35 @@ const ContactSection = ({ data }: ContactSectionProps) => {
                 type="submit"
                 className="w-full py-3 px-6 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors"
               >
-                Trimite mesajul
+                {lang === "ro" ? "Trimite mesajul" : 
+                 lang === "en" ? "Send message" : 
+                 "Отправить сообщение"}
               </button>
               
               <p className="text-sm text-construction-500 mt-2">
-                * Câmpuri obligatorii
+                {lang === "ro" ? "* Câmpuri obligatorii" : 
+                 lang === "en" ? "* Required fields" : 
+                 "* Обязательные поля"}
               </p>
             </form>
           </div>
           
           <div className="bg-construction-900 p-8 rounded-xl shadow-lg text-white">
-            <h3 className="text-2xl font-semibold mb-8">Informații de contact</h3>
+            <h3 className="text-2xl font-semibold mb-8">
+              {lang === "ro" ? "Informații de contact" : 
+               lang === "en" ? "Contact information" : 
+               "Контактная информация"}
+            </h3>
             
             <div className="space-y-8">
               <div className="flex items-start gap-4">
                 <MapPin className="text-construction-accent h-6 w-6 mt-1" />
                 <div>
-                  <h4 className="font-medium text-construction-100 mb-1">Adresă</h4>
+                  <h4 className="font-medium text-construction-100 mb-1">
+                    {lang === "ro" ? "Adresă" : 
+                     lang === "en" ? "Address" : 
+                     "Адрес"}
+                  </h4>
                   <p>{data.info.location}</p>
                 </div>
               </div>
@@ -153,13 +204,19 @@ const ContactSection = ({ data }: ContactSectionProps) => {
               <div className="flex items-start gap-4">
                 <Phone className="text-construction-accent h-6 w-6 mt-1" />
                 <div>
-                  <h4 className="font-medium text-construction-100 mb-1">Telefon</h4>
+                  <h4 className="font-medium text-construction-100 mb-1">
+                    {lang === "ro" ? "Telefon" : 
+                     lang === "en" ? "Phone" : 
+                     "Телефон"}
+                  </h4>
                   <p>{data.info.phone}</p>
                   <a 
                     href={`tel:${data.info.phone.replace(/\s+/g, '')}`}
                     className="inline-block mt-2 text-sm px-4 py-1 bg-construction-800 hover:bg-construction-700 rounded-full transition-colors"
                   >
-                    Sună acum
+                    {lang === "ro" ? "Sună acum" : 
+                     lang === "en" ? "Call now" : 
+                     "Позвонить сейчас"}
                   </a>
                 </div>
               </div>
@@ -167,13 +224,19 @@ const ContactSection = ({ data }: ContactSectionProps) => {
               <div className="flex items-start gap-4">
                 <Mail className="text-construction-accent h-6 w-6 mt-1" />
                 <div>
-                  <h4 className="font-medium text-construction-100 mb-1">Email</h4>
+                  <h4 className="font-medium text-construction-100 mb-1">
+                    {lang === "ro" ? "Email" : 
+                     lang === "en" ? "Email" : 
+                     "Эл. почта"}
+                  </h4>
                   <p>{data.info.email}</p>
                   <a 
                     href={`mailto:${data.info.email}`}
                     className="inline-block mt-2 text-sm px-4 py-1 bg-construction-800 hover:bg-construction-700 rounded-full transition-colors"
                   >
-                    Trimite email
+                    {lang === "ro" ? "Trimite email" : 
+                     lang === "en" ? "Send email" : 
+                     "Отправить эл. письмо"}
                   </a>
                 </div>
               </div>
@@ -181,25 +244,26 @@ const ContactSection = ({ data }: ContactSectionProps) => {
               <div className="flex items-start gap-4">
                 <Clock className="text-construction-accent h-6 w-6 mt-1" />
                 <div>
-                  <h4 className="font-medium text-construction-100 mb-1">Program de lucru</h4>
-                  <p>Luni - Vineri: {data.schedule.weekdays}</p>
-                  <p>Sâmbătă: {data.schedule.saturday}</p>
-                  <p>Duminică: {data.schedule.sunday}</p>
+                  <h4 className="font-medium text-construction-100 mb-1">
+                    {lang === "ro" ? "Program de lucru" : 
+                     lang === "en" ? "Working hours" : 
+                     "Часы работы"}
+                  </h4>
+                  <p>{lang === "ro" ? "Luni - Vineri:" : lang === "en" ? "Monday - Friday:" : "Понедельник - Пятница:"} {data.schedule.weekdays}</p>
+                  <p>{lang === "ro" ? "Sâmbătă:" : lang === "en" ? "Saturday:" : "Суббота:"} {data.schedule.saturday}</p>
+                  <p>{lang === "ro" ? "Duminică:" : lang === "en" ? "Sunday:" : "Воскресенье:"} {data.schedule.sunday}</p>
                 </div>
               </div>
             </div>
             
             <div className="mt-10">
               <button 
-                onClick={() => {
-                  toast({
-                    title: "Solicită o ofertă personalizată",
-                    description: "Completați formularul din stânga sau contactați-ne telefonic pentru o ofertă personalizată.",
-                  });
-                }}
+                onClick={scrollToForm}
                 className="w-full py-3 px-6 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors"
               >
-                Contactează-ne pentru o ofertă personalizată
+                {lang === "ro" ? "Contactează-ne pentru o ofertă personalizată" : 
+                 lang === "en" ? "Contact us for a personalized quote" : 
+                 "Свяжитесь с нами для получения индивидуального предложения"}
               </button>
             </div>
           </div>

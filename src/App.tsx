@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SiteProvider } from "./contexts/SiteContext";
 import Index from "./pages/Index";
+import Projects from "./pages/Projects";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -24,6 +25,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/proiecte" element={<Projects />} />
             <Route path="/termeni-si-conditii" element={<TermsAndConditions />} />
             <Route path="/politica-de-confidentialitate" element={<PrivacyPolicy />} />
             <Route path="/admin/login" element={<AdminLogin />} />
