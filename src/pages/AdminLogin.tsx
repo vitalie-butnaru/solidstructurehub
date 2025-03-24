@@ -75,9 +75,6 @@ const AdminLogin = () => {
                 className="mt-1"
                 placeholder="••••••••"
               />
-              <p className="mt-1 text-xs text-construction-500">
-                Pentru demo: username: 'admin', password: 'admin123'
-              </p>
             </div>
           </div>
 

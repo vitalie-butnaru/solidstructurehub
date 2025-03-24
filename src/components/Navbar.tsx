@@ -40,13 +40,15 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          {['servicii', 'de-ce-noi', 'contact'].map((item) => (
+          {['servicii', 'proiecte', 'de-ce-noi', 'contact'].map((item) => (
             <button
               key={item}
               onClick={() => scrollToSection(item)}
               className="text-construction-700 hover:text-construction-accent transition-colors relative group"
             >
-              {item === 'servicii' ? 'Servicii' : item === 'de-ce-noi' ? 'De Ce Noi' : 'Contact'}
+              {item === 'servicii' ? 'Servicii' : 
+               item === 'proiecte' ? 'Proiecte' :
+               item === 'de-ce-noi' ? 'De Ce Noi' : 'Contact'}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-construction-accent transition-all duration-300 group-hover:w-full"></span>
             </button>
           ))}
@@ -70,14 +72,18 @@ const Navbar = () => {
       >
         <div className="container h-full flex flex-col items-center justify-center">
           <div className="space-y-8 w-full">
-            {['servicii', 'de-ce-noi', 'contact'].map((item, index) => (
+            {['servicii', 'proiecte', 'de-ce-noi', 'contact'].map((item, index) => (
               <div key={item} className="overflow-hidden">
                 <button
                   onClick={() => scrollToSection(item)}
                   className="text-2xl text-white hover:text-construction-accent flex items-center justify-center w-full py-4 transition-colors"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <span>{item === 'servicii' ? 'Servicii' : item === 'de-ce-noi' ? 'De Ce Noi' : 'Contact'}</span>
+                  <span>
+                    {item === 'servicii' ? 'Servicii' : 
+                     item === 'proiecte' ? 'Proiecte' :
+                     item === 'de-ce-noi' ? 'De Ce Noi' : 'Contact'}
+                  </span>
                   <ChevronRight className="ml-2 animate-fade-in-right" />
                 </button>
               </div>
