@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSite } from '@/contexts/SiteContext';
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from 'lucide-react';
 
 const ProjectsCarousel = () => {
   const { siteData } = useSite();
   const projects = siteData.projects.items;
+  const [activeIndex, setActiveIndex] = useState(0);
 
   if (!projects || projects.length === 0) {
     return null;
@@ -21,7 +24,11 @@ const ProjectsCarousel = () => {
           </p>
         </div>
 
-        <Carousel className="w-full max-w-5xl mx-auto">
+        <Carousel 
+          className="w-full max-w-5xl mx-auto"
+          setActiveIndex={setActiveIndex}
+          activeIndex={activeIndex}
+        >
           <CarouselContent>
             {projects.map((project) => (
               <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/2">
@@ -33,10 +40,20 @@ const ProjectsCarousel = () => {
                         alt={project.title} 
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
+                      {project.category && (
+                        <div className="absolute top-3 right-3 bg-construction-accent/90 text-white px-3 py-1 rounded-full text-xs font-medium">
+                          {project.category}
+                        </div>
+                      )}
                     </div>
                     <div className="p-5 flex-grow flex flex-col">
                       <h3 className="text-xl font-semibold text-construction-900 mb-2">{project.title}</h3>
                       <p className="text-construction-600 flex-grow">{project.description}</p>
+                      {project.date && (
+                        <div className="mt-3 text-sm text-construction-500">
+                          {project.date}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -46,6 +63,33 @@ const ProjectsCarousel = () => {
           <CarouselPrevious className="left-0 lg:-left-12" />
           <CarouselNext className="right-0 lg:-right-12" />
         </Carousel>
+        
+        {/* Pagination indicators */}
+        <div className="flex justify-center mt-6 space-x-2">
+          {projects.map((_, index) => (
+            <button
+              key={index}
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                Math.floor(activeIndex) === index ? 'w-8 bg-construction-accent' : 'w-2.5 bg-construction-200'
+              }`}
+              onClick={() => setActiveIndex(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+        
+        {/* View All Projects button */}
+        <div className="flex justify-center mt-8">
+          <Button
+            className="bg-construction-accent hover:bg-construction-accent/90 text-white"
+            onClick={() => {
+              // This could link to a dedicated projects page in the future
+              window.location.href = "#proiecte";
+            }}
+          >
+            Vezi Toate Proiectele <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </section>
   );

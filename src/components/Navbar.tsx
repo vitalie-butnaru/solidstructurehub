@@ -1,11 +1,18 @@
 
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Menu, X, ChevronRight } from 'lucide-react';
+import { Menu, X, ChevronRight, Globe } from 'lucide-react';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [language, setLanguage] = useState('RO');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +29,13 @@ const Navbar = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const switchLanguage = (lang: string) => {
+    setLanguage(lang);
+    // In a real implementation, this would trigger language change
+    // For now, we'll just show a toast notification
+    console.log(`Switched to ${lang}`);
   };
 
   return (
@@ -52,6 +66,22 @@ const Navbar = () => {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-construction-accent transition-all duration-300 group-hover:w-full"></span>
             </button>
           ))}
+          
+          {/* Language Switcher */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center text-construction-700 hover:text-construction-accent transition-colors">
+              <Globe className="h-4 w-4 mr-1" />
+              <span>{language}</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => switchLanguage('RO')}>
+                Română
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => switchLanguage('EN')}>
+                English
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Mobile Menu Button */}
@@ -88,6 +118,22 @@ const Navbar = () => {
                 </button>
               </div>
             ))}
+            
+            {/* Language options in mobile menu */}
+            <div className="flex justify-center space-x-4 mt-6">
+              <button 
+                onClick={() => switchLanguage('RO')}
+                className={`px-4 py-2 rounded-md ${language === 'RO' ? 'bg-construction-accent text-white' : 'text-white'}`}
+              >
+                RO
+              </button>
+              <button 
+                onClick={() => switchLanguage('EN')}
+                className={`px-4 py-2 rounded-md ${language === 'EN' ? 'bg-construction-accent text-white' : 'text-white'}`}
+              >
+                EN
+              </button>
+            </div>
           </div>
         </div>
       </div>

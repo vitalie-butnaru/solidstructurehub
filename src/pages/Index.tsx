@@ -6,6 +6,7 @@ import WhyChooseUs from "@/components/WhyChooseUs";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ProjectsCarousel from "@/components/ProjectsCarousel";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { useSite } from "@/contexts/SiteContext";
 
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
       <WhyChooseUs data={siteData.whyChooseUs} />
       <ContactSection data={siteData.contact} />
       <Footer data={siteData.footer} />
+      <ScrollToTopButton />
     </div>
   );
 };
