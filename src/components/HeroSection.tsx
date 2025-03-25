@@ -2,12 +2,16 @@
 import { ArrowDown } from 'lucide-react';
 import { SiteData } from '@/contexts/SiteContext';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { getLocalizedContent } from '@/utils/languageUtils';
 
 interface HeroSectionProps {
   data: SiteData['hero'];
 }
 
 const HeroSection = ({ data }: HeroSectionProps) => {
+  const [searchParams] = useSearchParams();
+  const lang = searchParams.get("lang") || "ro";
   const [currentBackground, setCurrentBackground] = useState(data.backgroundImage);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [backgrounds, setBackgrounds] = useState([
@@ -66,16 +70,16 @@ const HeroSection = ({ data }: HeroSectionProps) => {
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <div className="opacity-0 animate-fade-in">
             <span className="inline-block px-3 py-1 text-sm md:text-base rounded-full bg-construction-accent/10 text-construction-accent border border-construction-accent/20 mb-4">
-              {data.subtitle}
+              {getLocalizedContent(data.subtitle, lang)}
             </span>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-balance opacity-0 animate-fade-in animate-delay-200">
-            {data.title}
+            {getLocalizedContent(data.title, lang)}
           </h1>
 
           <p className="text-xl text-construction-100 max-w-2xl mx-auto opacity-0 animate-fade-in animate-delay-300">
-            {data.description}
+            {getLocalizedContent(data.description, lang)}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 opacity-0 animate-fade-in animate-delay-500">
@@ -83,7 +87,7 @@ const HeroSection = ({ data }: HeroSectionProps) => {
               onClick={scrollToServices}
               className="px-8 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-construction-accent/20"
             >
-              {data.ctaText}
+              {getLocalizedContent(data.ctaText, lang)}
             </button>
           </div>
         </div>

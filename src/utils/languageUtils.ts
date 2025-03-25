@@ -72,4 +72,3 @@ export const isMultilingual = (value: any): value is LanguageContent => {
     'en' in value && 
     'ru' in value;
 };
-

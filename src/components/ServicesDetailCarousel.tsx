@@ -1,7 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { SiteData } from "@/contexts/SiteContext";
+import { useSearchParams } from "react-router-dom";
+import { getLocalizedContent } from "@/utils/languageUtils";
 
 interface ServicesDetailCarouselProps {
   service: SiteData["services"]["items"][0];
@@ -16,20 +17,26 @@ interface ServiceImage {
 const ServicesDetailCarousel = ({ service }: ServicesDetailCarouselProps) => {
   const [images, setImages] = useState<ServiceImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [searchParams] = useSearchParams();
+  const lang = searchParams.get("lang") || "ro";
 
   useEffect(() => {
     // Construim array-ul de imagini cu imaginea principală și imaginile din galerie
     const allImages = [
-      { id: "main", src: service.imageSrc, alt: service.title },
+      { 
+        id: "main", 
+        src: service.imageSrc, 
+        alt: getLocalizedContent(service.title, lang)
+      },
       ...service.galleryImages.map((src, index) => ({
         id: `gallery-${index}`,
         src,
-        alt: `${service.title} ${index + 1}`
+        alt: `${getLocalizedContent(service.title, lang)} ${index + 1}`
       }))
     ];
     setImages(allImages);
     setCurrentIndex(0);
-  }, [service]);
+  }, [service, lang]);
 
   useEffect(() => {
     // Auto-rotate carousel

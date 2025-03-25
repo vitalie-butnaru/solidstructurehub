@@ -1,12 +1,17 @@
 
 import { ArrowUp } from 'lucide-react';
 import { SiteData } from '@/contexts/SiteContext';
+import { useSearchParams } from "react-router-dom";
+import { getLocalizedContent } from "@/utils/languageUtils";
 
 interface FooterProps {
   data: SiteData['footer'];
 }
 
 const Footer = ({ data }: FooterProps) => {
+  const [searchParams] = useSearchParams();
+  const lang = searchParams.get("lang") || "ro";
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -21,7 +26,7 @@ const Footer = ({ data }: FooterProps) => {
           <div className="mb-8 md:mb-0">
             <span className="text-3xl font-bold text-white">{data.companyName}</span>
             <p className="mt-2 max-w-md">
-              {data.description}
+              {getLocalizedContent(data.description, lang)}
             </p>
           </div>
           
@@ -38,7 +43,7 @@ const Footer = ({ data }: FooterProps) => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex flex-col md:flex-row gap-2 md:items-center">
               <p className="text-sm">
-                {data.copyright}
+                {getLocalizedContent(data.copyright, lang)}
               </p>
               <span className="text-sm hidden md:inline">|</span>
               <a 
@@ -53,10 +58,14 @@ const Footer = ({ data }: FooterProps) => {
             
             <div className="mt-4 md:mt-0 flex gap-6">
               <a href="/termeni-si-conditii" className="text-construction-400 hover:text-construction-accent transition-colors">
-                Termeni și condiții
+                {lang === "ro" ? "Termeni și condiții" : 
+                 lang === "en" ? "Terms and Conditions" : 
+                 "Условия использования"}
               </a>
               <a href="/politica-de-confidentialitate" className="text-construction-400 hover:text-construction-accent transition-colors">
-                Politica de confidențialitate
+                {lang === "ro" ? "Politica de confidențialitate" : 
+                 lang === "en" ? "Privacy Policy" : 
+                 "Политика конфиденциальности"}
               </a>
             </div>
           </div>
