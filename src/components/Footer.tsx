@@ -24,7 +24,7 @@ const Footer = ({ data }: FooterProps) => {
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div className="mb-8 md:mb-0">
-            <span className="text-3xl font-bold text-white">{data.companyName}</span>
+            <span className="text-3xl font-bold text-white">{getLocalizedContent(data.companyName, lang)}</span>
             <p className="mt-2 max-w-md">
               {getLocalizedContent(data.description, lang)}
             </p>
@@ -34,7 +34,7 @@ const Footer = ({ data }: FooterProps) => {
             onClick={scrollToTop}
             className="flex items-center gap-2 py-2 px-4 rounded-full bg-construction-800 hover:bg-construction-700 transition-colors"
           >
-            <span>Sus</span>
+            <span>{lang === "ro" ? "Sus" : lang === "en" ? "Top" : "Вверх"}</span>
             <ArrowUp size={16} />
           </button>
         </div>

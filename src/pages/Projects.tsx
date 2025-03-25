@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import { getLocalizedContent } from "@/utils/languageUtils";
 
 const Projects = () => {
   const { siteData } = useSite();
@@ -86,7 +87,7 @@ const Projects = () => {
                   <div className="relative h-60 overflow-hidden">
                     <img 
                       src={project.imageSrc} 
-                      alt={project.title} 
+                      alt={getLocalizedContent(project.title, lang)} 
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                     />
                     {project.category && (
@@ -97,8 +98,12 @@ const Projects = () => {
                   </div>
                   
                   <div className="p-5">
-                    <h3 className="text-xl font-semibold text-construction-900 mb-2">{project.title}</h3>
-                    <p className="text-construction-600 mb-4">{project.description}</p>
+                    <h3 className="text-xl font-semibold text-construction-900 mb-2">
+                      {getLocalizedContent(project.title, lang)}
+                    </h3>
+                    <p className="text-construction-600 mb-4">
+                      {getLocalizedContent(project.description, lang)}
+                    </p>
                     {project.date && (
                       <div className="text-sm text-construction-500">
                         {project.date}

@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { SiteData } from "@/contexts/SiteContext";
+import { getLocalizedContent } from "@/utils/languageUtils";
 
 interface ContactSectionProps {
   data: SiteData["contact"];
@@ -77,14 +78,10 @@ const ContactSection = ({ data }: ContactSectionProps) => {
       <div className="container">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-construction-900 mb-4">
-            {lang === "ro" ? data.title : 
-             lang === "en" ? "CONTACT" : 
-             "КОНТАКТЫ"}
+            {getLocalizedContent(data.title, lang)}
           </h2>
           <p className="text-construction-600">
-            {lang === "ro" ? data.description : 
-             lang === "en" ? "We are here to answer your questions and provide you with customized solutions" : 
-             "Мы здесь, чтобы ответить на ваши вопросы и предложить индивидуальные решения"}
+            {getLocalizedContent(data.description, lang)}
           </p>
         </div>
 
@@ -197,7 +194,7 @@ const ContactSection = ({ data }: ContactSectionProps) => {
                      lang === "en" ? "Address" : 
                      "Адрес"}
                   </h4>
-                  <p>{data.info.location}</p>
+                  <p>{getLocalizedContent(data.info.location, lang)}</p>
                 </div>
               </div>
               

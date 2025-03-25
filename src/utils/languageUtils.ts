@@ -72,3 +72,24 @@ export const isMultilingual = (value: any): value is LanguageContent => {
     'en' in value && 
     'ru' in value;
 };
+
+/**
+ * Get string value for fields that must remain as simple strings
+ * Used for fields like phone, email that shouldn't be multilingual
+ * @param value The value which may be a string or a language object
+ * @returns A string (takes Romanian version if it's a language object)
+ */
+export const getStringValue = (
+  value: string | LanguageContent | undefined
+): string => {
+  if (!value) {
+    return '';
+  }
+  
+  if (typeof value === 'string') {
+    return value;
+  }
+  
+  // For multilingual objects, use the Romanian version as default
+  return value.ro || '';
+};

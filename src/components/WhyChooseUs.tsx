@@ -3,7 +3,8 @@ import { CheckCircle, Clock, Award, Users } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { SiteData } from '@/contexts/SiteContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getLocalizedContent } from '@/utils/languageUtils';
 
 // Map pentru iconițe în funcție de ID
 const iconMap: Record<string, any> = {
@@ -22,6 +23,8 @@ interface WhyChooseUsProps {
 const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [searchParams] = useSearchParams();
+  const lang = searchParams.get("lang") || "ro";
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,13 +70,13 @@ const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
             "section-title text-white opacity-0",
             isVisible && "animate-fade-in"
           )}>
-            {data.title}
+            {getLocalizedContent(data.title, lang)}
           </h2>
           <p className={cn(
             "text-construction-300 mt-6 opacity-0",
             isVisible && "animate-fade-in animate-delay-200"
           )}>
-            {data.description}
+            {getLocalizedContent(data.description, lang)}
           </p>
         </div>
 
@@ -99,11 +102,11 @@ const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
                   
                   <div>
                     <h3 className="text-xl font-semibold mb-2 text-white">
-                      {benefit.title}
+                      {getLocalizedContent(benefit.title, lang)}
                     </h3>
                     
                     <p className="text-construction-300">
-                      {benefit.description}
+                      {getLocalizedContent(benefit.description, lang)}
                     </p>
                   </div>
                 </div>
@@ -120,7 +123,9 @@ const WhyChooseUs = ({ data }: WhyChooseUsProps) => {
             onClick={handleContactClick}
             className="inline-block px-6 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 cursor-pointer"
           >
-            Contactează-ne pentru o ofertă personalizată
+            {lang === "ro" ? "Contactează-ne pentru o ofertă personalizată" : 
+             lang === "en" ? "Contact us for a personalized offer" : 
+             "Свяжитесь с нами для индивидуального предложения"}
           </button>
         </div>
       </div>
