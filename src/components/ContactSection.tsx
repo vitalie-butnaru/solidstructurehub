@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { SiteData } from "@/contexts/SiteContext";
-import { getLocalizedContent } from "@/utils/languageUtils";
+import { getLocalizedContent, getStringValue } from "@/utils/languageUtils";
 
 interface ContactSectionProps {
   data: SiteData["contact"];
@@ -72,6 +72,10 @@ const ContactSection = ({ data }: ContactSectionProps) => {
       }
     }
   };
+
+  // Get string values for contact information
+  const phoneString = getStringValue(data.info.phone);
+  const emailString = getStringValue(data.info.email);
 
   return (
     <section id="contact" className="py-24 bg-construction-50">
@@ -206,9 +210,9 @@ const ContactSection = ({ data }: ContactSectionProps) => {
                      lang === "en" ? "Phone" : 
                      "Телефон"}
                   </h4>
-                  <p>{data.info.phone}</p>
+                  <p>{getLocalizedContent(data.info.phone, lang)}</p>
                   <a 
-                    href={`tel:${data.info.phone.replace(/\s+/g, '')}`}
+                    href={`tel:${phoneString.replace(/\s+/g, '')}`}
                     className="inline-block mt-2 text-sm px-4 py-1 bg-construction-800 hover:bg-construction-700 rounded-full transition-colors"
                   >
                     {lang === "ro" ? "Sună acum" : 
@@ -226,9 +230,9 @@ const ContactSection = ({ data }: ContactSectionProps) => {
                      lang === "en" ? "Email" : 
                      "Эл. почта"}
                   </h4>
-                  <p>{data.info.email}</p>
+                  <p>{getLocalizedContent(data.info.email, lang)}</p>
                   <a 
-                    href={`mailto:${data.info.email}`}
+                    href={`mailto:${emailString}`}
                     className="inline-block mt-2 text-sm px-4 py-1 bg-construction-800 hover:bg-construction-700 rounded-full transition-colors"
                   >
                     {lang === "ro" ? "Trimite email" : 
@@ -246,9 +250,9 @@ const ContactSection = ({ data }: ContactSectionProps) => {
                      lang === "en" ? "Working hours" : 
                      "Часы работы"}
                   </h4>
-                  <p>{lang === "ro" ? "Luni - Vineri:" : lang === "en" ? "Monday - Friday:" : "Понедельник - Пятница:"} {data.schedule.weekdays}</p>
-                  <p>{lang === "ro" ? "Sâmbătă:" : lang === "en" ? "Saturday:" : "Суббота:"} {data.schedule.saturday}</p>
-                  <p>{lang === "ro" ? "Duminică:" : lang === "en" ? "Sunday:" : "Воскресенье:"} {data.schedule.sunday}</p>
+                  <p>{lang === "ro" ? "Luni - Vineri:" : lang === "en" ? "Monday - Friday:" : "Понедельник - Пятница:"} {getLocalizedContent(data.schedule.weekdays, lang)}</p>
+                  <p>{lang === "ro" ? "Sâmbătă:" : lang === "en" ? "Saturday:" : "Суббота:"} {getLocalizedContent(data.schedule.saturday, lang)}</p>
+                  <p>{lang === "ro" ? "Duminică:" : lang === "en" ? "Sunday:" : "Воскресенье:"} {getLocalizedContent(data.schedule.sunday, lang)}</p>
                 </div>
               </div>
             </div>
