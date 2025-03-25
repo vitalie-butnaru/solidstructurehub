@@ -1,7 +1,7 @@
 
 // Helper utility to handle multilingual content
 
-type LanguageContent = {
+export type LanguageContent = {
   ro: string;
   en: string;
   ru: string;
@@ -61,3 +61,15 @@ export const ensureMultilingual = (
   
   return value;
 };
+
+/**
+ * Checks if a value is of type LanguageContent
+ */
+export const isMultilingual = (value: any): value is LanguageContent => {
+  return value && 
+    typeof value === 'object' && 
+    'ro' in value && 
+    'en' in value && 
+    'ru' in value;
+};
+

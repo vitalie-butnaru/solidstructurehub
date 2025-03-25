@@ -1,35 +1,35 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { 
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose
 } from "@/components/ui/dialog";
-import { Pencil, Trash, Plus, Image } from 'lucide-react';
+import { Pencil, Trash, Plus } from 'lucide-react';
 import { SiteData } from "@/contexts/SiteContext";
+import { LanguageContent, getLocalizedContent } from "@/utils/languageUtils";
+import MultilingualInput from "./MultilingualInput";
 
 interface WhyChooseUsEditorProps {
   data: SiteData["whyChooseUs"];
   onSave: (data: SiteData["whyChooseUs"]) => void;
 }
 
+type BenefitItem = {
+  id: string;
+  title: string | LanguageContent;
+  description: string | LanguageContent;
+};
+
 const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
   const [formData, setFormData] = useState({ ...data });
-  const [currentItem, setCurrentItem] = useState<{
-    id: string;
-    title: string;
-    description: string;
-  } | null>(null);
+  const [currentItem, setCurrentItem] = useState<BenefitItem | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -37,13 +37,19 @@ const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
     }));
   };
 
-  const handleItemChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleMultilingualChange = (field: string, value: LanguageContent) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleItemMultilingualChange = (field: string, value: LanguageContent) => {
     if (!currentItem) return;
     
-    const { name, value } = e.target;
     setCurrentItem((prev) => ({
       ...prev!,
-      [name]: value,
+      [field]: value,
     }));
   };
 
@@ -52,16 +58,16 @@ const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
     onSave(formData);
   };
 
-  const handleEditItem = (item: typeof currentItem) => {
-    setCurrentItem({ ...item! });
+  const handleEditItem = (item: BenefitItem) => {
+    setCurrentItem({ ...item });
     setDialogOpen(true);
   };
 
   const handleAddItem = () => {
     setCurrentItem({
       id: `benefit-${Date.now()}`,
-      title: '',
-      description: '',
+      title: { ro: '', en: '', ru: '' },
+      description: { ro: '', en: '', ru: '' },
     });
     setDialogOpen(true);
   };
@@ -101,27 +107,22 @@ const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
       <h2 className="text-xl font-semibold mb-4">Editare Secțiune "De ce să ne alegi"</h2>
 
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="title">Titlu secțiune</Label>
-          <Input
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <MultilingualInput
+          id="whychooseus-title"
+          label="Titlu secțiune"
+          value={formData.title}
+          onChange={(value) => handleMultilingualChange("title", value)}
+          required={true}
+        />
 
-        <div>
-          <Label htmlFor="description">Descriere secțiune</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <MultilingualInput
+          id="whychooseus-description"
+          label="Descriere secțiune"
+          value={formData.description}
+          onChange={(value) => handleMultilingualChange("description", value)}
+          multiline={true}
+          required={true}
+        />
 
         <div>
           <Label htmlFor="backgroundImage">URL imagine fundal</Label>
@@ -188,8 +189,8 @@ const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
                   </Button>
                 </div>
                 
-                <h4 className="font-medium text-lg mt-4">{item.title}</h4>
-                <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                <h4 className="font-medium text-lg mt-4">{getLocalizedContent(item.title, 'ro')}</h4>
+                <p className="text-sm text-gray-600 mt-1">{getLocalizedContent(item.description, 'ro')}</p>
               </div>
             ))}
           </div>
@@ -213,27 +214,22 @@ const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="edit-title">Titlu</Label>
-              <Input
-                id="edit-title"
-                name="title"
-                value={currentItem?.title || ''}
-                onChange={handleItemChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="edit-title"
+              label="Titlu"
+              value={currentItem?.title || { ro: '', en: '', ru: '' }}
+              onChange={(value) => handleItemMultilingualChange("title", value)}
+              required={true}
+            />
             
-            <div>
-              <Label htmlFor="edit-description">Descriere</Label>
-              <Textarea
-                id="edit-description"
-                name="description"
-                value={currentItem?.description || ''}
-                onChange={handleItemChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="edit-description"
+              label="Descriere"
+              value={currentItem?.description || { ro: '', en: '', ru: '' }}
+              onChange={(value) => handleItemMultilingualChange("description", value)}
+              multiline={true}
+              required={true}
+            />
           </div>
           
           <div className="flex justify-end gap-2">
@@ -251,6 +247,14 @@ const WhyChooseUsEditor = ({ data, onSave }: WhyChooseUsEditorProps) => {
         </DialogContent>
       </Dialog>
     </form>
+  );
+};
+
+const Label = ({ htmlFor, children }: { htmlFor: string, children: React.ReactNode }) => {
+  return (
+    <label htmlFor={htmlFor} className="block text-sm font-medium text-gray-700 mb-1">
+      {children}
+    </label>
   );
 };
 

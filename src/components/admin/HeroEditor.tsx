@@ -2,11 +2,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SiteData } from "@/contexts/SiteContext";
 import { Plus, Trash, Image } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
+import MultilingualInput from "./MultilingualInput";
 
 interface HeroEditorProps {
   data: SiteData["hero"];
@@ -15,13 +14,20 @@ interface HeroEditorProps {
 
 const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
   const [formData, setFormData] = useState({ ...data });
-  const [previewDuration, setPreviewDuration] = useState(3);
+  const [previewIndex, setPreviewIndex] = useState(0);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleMultilingualChange = (field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
     }));
   };
 
@@ -59,8 +65,7 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
     });
   };
 
-  // Simulează previzualizarea slider-ului
-  const [previewIndex, setPreviewIndex] = useState(0);
+  // All preview images
   const allPreviewImages = [formData.backgroundImage, ...formData.additionalImages].filter(Boolean);
 
   return (
@@ -69,53 +74,42 @@ const HeroEditor = ({ data, onSave }: HeroEditorProps) => {
 
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
-          <div>
-            <Label htmlFor="subtitle">Subtitlu</Label>
-            <Input
-              id="subtitle"
-              name="subtitle"
-              value={formData.subtitle}
-              onChange={handleChange}
-              required
-              className="animate-fade-in"
-            />
-          </div>
+          <MultilingualInput
+            id="subtitle"
+            label="Subtitlu"
+            value={formData.subtitle}
+            onChange={(value) => handleMultilingualChange("subtitle", value)}
+            required={true}
+            className="animate-fade-in"
+          />
 
-          <div>
-            <Label htmlFor="title">Titlu principal</Label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              className="animate-fade-in animate-delay-100"
-            />
-          </div>
+          <MultilingualInput
+            id="title"
+            label="Titlu principal"
+            value={formData.title}
+            onChange={(value) => handleMultilingualChange("title", value)}
+            required={true}
+            className="animate-fade-in animate-delay-100"
+          />
 
-          <div>
-            <Label htmlFor="description">Descriere</Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              className="animate-fade-in animate-delay-200"
-            />
-          </div>
+          <MultilingualInput
+            id="description"
+            label="Descriere"
+            value={formData.description}
+            onChange={(value) => handleMultilingualChange("description", value)}
+            multiline={true}
+            required={true}
+            className="animate-fade-in animate-delay-200"
+          />
 
-          <div>
-            <Label htmlFor="ctaText">Text buton</Label>
-            <Input
-              id="ctaText"
-              name="ctaText"
-              value={formData.ctaText}
-              onChange={handleChange}
-              required
-              className="animate-fade-in animate-delay-300"
-            />
-          </div>
+          <MultilingualInput
+            id="ctaText"
+            label="Text buton"
+            value={formData.ctaText}
+            onChange={(value) => handleMultilingualChange("ctaText", value)}
+            required={true}
+            className="animate-fade-in animate-delay-300"
+          />
 
           <div className="border p-4 rounded-lg space-y-4 bg-gray-50 animate-fade-in animate-delay-400">
             <h3 className="font-medium">Imagini Hero Slider</h3>

@@ -1,16 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RO, GB, RU } from 'country-flag-icons/react/3x2';
-
-type LanguageContent = {
-  ro: string;
-  en: string;
-  ru: string;
-};
+import { LanguageContent, ensureMultilingual } from "@/utils/languageUtils";
 
 interface MultilingualInputProps {
   id: string;
@@ -34,11 +29,12 @@ const MultilingualInput = ({
   className = "" 
 }: MultilingualInputProps) => {
   // Convert string values to multilingual object if needed
-  const [content, setContent] = useState<LanguageContent>(
-    typeof value === 'string' 
-      ? { ro: value, en: value, ru: value } 
-      : value
-  );
+  const [content, setContent] = useState<LanguageContent>(ensureMultilingual(value));
+
+  // Update content if value changes externally
+  useEffect(() => {
+    setContent(ensureMultilingual(value));
+  }, [value]);
 
   // Current active language tab
   const [activeTab, setActiveTab] = useState<"ro" | "en" | "ru">("ro");

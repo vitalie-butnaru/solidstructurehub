@@ -1,7 +1,7 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SiteData } from "@/contexts/SiteContext";
 import { 
@@ -12,6 +12,8 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import MultilingualInput from "./MultilingualInput";
+import { LanguageContent, getLocalizedContent } from "@/utils/languageUtils";
 
 interface ContactEditorProps {
   data: SiteData["contact"];
@@ -75,17 +77,17 @@ interface StyleOptions {
 
 // Then create the extended contact data type
 interface ExtendedContactData {
-  title: string;
-  description: string;
+  title: string | LanguageContent;
+  description: string | LanguageContent;
   info: {
-    location: string;
-    phone: string;
-    email: string;
+    location: string | LanguageContent;
+    phone: string | LanguageContent;
+    email: string | LanguageContent;
   };
   schedule: {
-    weekdays: string;
-    saturday: string;
-    sunday: string;
+    weekdays: string | LanguageContent;
+    saturday: string | LanguageContent;
+    sunday: string | LanguageContent;
   };
   styles?: StyleOptions;
 }
@@ -116,44 +118,31 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
     }
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    
-    if (name.includes('.')) {
-      const [section, field] = name.split('.');
-      
-      // Type-safe way of updating nested objects
-      if (section === 'info') {
-        setFormData(prev => ({
-          ...prev,
-          info: {
-            ...prev.info,
-            [field]: value
-          }
-        }));
-      } else if (section === 'schedule') {
-        setFormData(prev => ({
-          ...prev,
-          schedule: {
-            ...prev.schedule,
-            [field]: value
-          }
-        }));
-      } else if (section === 'styles' && formData.styles) {
-        setFormData(prev => ({
-          ...prev,
-          styles: {
-            ...prev.styles,
-            [field]: value
-          }
-        }));
+  const handleInfoChange = (field: string, value: LanguageContent) => {
+    setFormData(prev => ({
+      ...prev,
+      info: {
+        ...prev.info,
+        [field]: value
       }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    }));
+  };
+
+  const handleScheduleChange = (field: string, value: LanguageContent) => {
+    setFormData(prev => ({
+      ...prev,
+      schedule: {
+        ...prev.schedule,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleMultilingualChange = (field: string, value: LanguageContent) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleStyleChange = (field: string, value: string) => {
@@ -170,14 +159,22 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^[0-9+\-\s()]+$/;
     
+    const email = typeof formData.info.email === 'string' 
+      ? formData.info.email 
+      : formData.info.email.ro;
+      
+    const phone = typeof formData.info.phone === 'string'
+      ? formData.info.phone
+      : formData.info.phone.ro;
+    
     // Email validation
-    if (!emailRegex.test(formData.info.email)) {
+    if (!emailRegex.test(email)) {
       toast.error("Formatul adresei de email este invalid!");
       return;
     }
     
     // Phone validation
-    if (!phoneRegex.test(formData.info.phone)) {
+    if (!phoneRegex.test(phone)) {
       toast.warning("Formatul numărului de telefon poate fi invalid!");
     }
     
@@ -342,10 +339,10 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
             <div className="md:col-span-2">
               <div className={`p-4 rounded-md ${formData.styles?.sectionBg || 'bg-white'} border`}>
                 <p className={`${formData.styles?.titleFont || 'font-sans'} ${formData.styles?.titleSize || 'text-xl'} ${formData.styles?.titleColor || 'text-gray-800'} font-bold`}>
-                  {formData.title || 'Titlu secțiune'}
+                  {getLocalizedContent(formData.title, 'ro') || 'Titlu secțiune'}
                 </p>
                 <p className={`${formData.styles?.contentFont || 'font-sans'} ${formData.styles?.contentSize || 'text-base'} ${formData.styles?.contentColor || 'text-gray-800'} mt-2`}>
-                  {formData.description || 'Descrierea secțiunii...'}
+                  {getLocalizedContent(formData.description, 'ro') || 'Descrierea secțiunii...'}
                 </p>
               </div>
             </div>
@@ -355,103 +352,80 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Informații generale</h3>
           <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label htmlFor="title">Titlu secțiune</Label>
-              <Input
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="title"
+              label="Titlu secțiune"
+              value={formData.title}
+              onChange={(value) => handleMultilingualChange("title", value)}
+              required={true}
+            />
 
-            <div>
-              <Label htmlFor="description">Descriere secțiune</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="description"
+              label="Descriere secțiune"
+              value={formData.description}
+              onChange={(value) => handleMultilingualChange("description", value)}
+              multiline={true}
+              required={true}
+            />
           </div>
         </div>
 
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Informații de contact</h3>
           <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label htmlFor="info.location">Locație</Label>
-              <Input
-                id="info.location"
-                name="info.location"
-                value={formData.info.location}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="info.location"
+              label="Locație"
+              value={formData.info.location}
+              onChange={(value) => handleInfoChange("location", value)}
+              required={true}
+            />
 
-            <div>
-              <Label htmlFor="info.phone">Telefon</Label>
-              <Input
-                id="info.phone"
-                name="info.phone"
-                value={formData.info.phone}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="info.phone"
+              label="Telefon"
+              value={formData.info.phone}
+              onChange={(value) => handleInfoChange("phone", value)}
+              required={true}
+            />
 
-            <div>
-              <Label htmlFor="info.email">Email</Label>
-              <Input
-                id="info.email"
-                name="info.email"
-                value={formData.info.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="info.email"
+              label="Email"
+              value={formData.info.email}
+              onChange={(value) => handleInfoChange("email", value)}
+              required={true}
+            />
           </div>
         </div>
 
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Program de lucru</h3>
           <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label htmlFor="schedule.weekdays">Luni - Vineri</Label>
-              <Input
-                id="schedule.weekdays"
-                name="schedule.weekdays"
-                value={formData.schedule.weekdays}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="schedule.weekdays"
+              label="Luni - Vineri"
+              value={formData.schedule.weekdays}
+              onChange={(value) => handleScheduleChange("weekdays", value)}
+              required={true}
+            />
 
-            <div>
-              <Label htmlFor="schedule.saturday">Sâmbătă</Label>
-              <Input
-                id="schedule.saturday"
-                name="schedule.saturday"
-                value={formData.schedule.saturday}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="schedule.saturday"
+              label="Sâmbătă"
+              value={formData.schedule.saturday}
+              onChange={(value) => handleScheduleChange("saturday", value)}
+              required={true}
+            />
 
-            <div>
-              <Label htmlFor="schedule.sunday">Duminică</Label>
-              <Input
-                id="schedule.sunday"
-                name="schedule.sunday"
-                value={formData.schedule.sunday}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <MultilingualInput
+              id="schedule.sunday"
+              label="Duminică"
+              value={formData.schedule.sunday}
+              onChange={(value) => handleScheduleChange("sunday", value)}
+              required={true}
+            />
           </div>
         </div>
       </div>

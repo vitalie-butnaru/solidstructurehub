@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate, Routes, Route, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSite } from "@/contexts/SiteContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

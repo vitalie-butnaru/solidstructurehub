@@ -1,10 +1,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SiteData } from "@/contexts/SiteContext";
+import MultilingualInput from "./MultilingualInput";
 
 interface FooterEditorProps {
   data: SiteData["footer"];
@@ -14,11 +13,10 @@ interface FooterEditorProps {
 const FooterEditor = ({ data, onSave }: FooterEditorProps) => {
   const [formData, setFormData] = useState({ ...data });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleMultilingualChange = (field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [field]: value,
     }));
   };
 
@@ -32,38 +30,30 @@ const FooterEditor = ({ data, onSave }: FooterEditorProps) => {
       <h2 className="text-xl font-semibold mb-4">Editare Footer</h2>
 
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="companyName">Numele companiei</Label>
-          <Input
-            id="companyName"
-            name="companyName"
-            value={formData.companyName}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <MultilingualInput
+          id="companyName"
+          label="Numele companiei"
+          value={formData.companyName}
+          onChange={(value) => handleMultilingualChange("companyName", value)}
+          required={true}
+        />
 
-        <div>
-          <Label htmlFor="description">Descriere companiei</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <MultilingualInput
+          id="description"
+          label="Descriere companiei"
+          value={formData.description}
+          onChange={(value) => handleMultilingualChange("description", value)}
+          multiline={true}
+          required={true}
+        />
 
-        <div>
-          <Label htmlFor="copyright">Text copyright</Label>
-          <Input
-            id="copyright"
-            name="copyright"
-            value={formData.copyright}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <MultilingualInput
+          id="copyright"
+          label="Text copyright"
+          value={formData.copyright}
+          onChange={(value) => handleMultilingualChange("copyright", value)}
+          required={true}
+        />
       </div>
 
       <div className="flex justify-end">
