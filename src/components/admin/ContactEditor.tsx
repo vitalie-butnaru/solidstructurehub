@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import MultilingualInput from "./MultilingualInput";
-import { LanguageContent, getLocalizedContent } from "@/utils/languageUtils";
+import { LanguageContent, getLocalizedContent, getStringValue } from "@/utils/languageUtils";
 
 interface ContactEditorProps {
   data: SiteData["contact"];
@@ -75,7 +74,7 @@ interface StyleOptions {
   contentColor?: string;
 }
 
-// Then create the extended contact data type
+// Then create the extended contact data type that matches SiteData["contact"]
 interface ExtendedContactData {
   title: string | LanguageContent;
   description: string | LanguageContent;
@@ -159,13 +158,8 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^[0-9+\-\s()]+$/;
     
-    const email = typeof formData.info.email === 'string' 
-      ? formData.info.email 
-      : formData.info.email.ro;
-      
-    const phone = typeof formData.info.phone === 'string'
-      ? formData.info.phone
-      : formData.info.phone.ro;
+    const email = getStringValue(formData.info.email);
+    const phone = getStringValue(formData.info.phone);
     
     // Email validation
     if (!emailRegex.test(email)) {
@@ -183,16 +177,8 @@ const ContactEditor = ({ data, onSave }: ContactEditorProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Convert back to SiteData["contact"] format to maintain compatibility
-    const saveData: SiteData["contact"] = {
-      title: formData.title,
-      description: formData.description,
-      info: formData.info,
-      schedule: formData.schedule
-    };
-    // Add styles as any to maintain compatibility with existing code
-    (saveData as any).styles = formData.styles;
-    onSave(saveData);
+    // The formData now matches the SiteData["contact"] type, so we can pass it directly
+    onSave(formData);
   };
 
   return (

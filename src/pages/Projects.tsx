@@ -18,15 +18,20 @@ const Projects = () => {
   const lang = searchParams.get("lang") || "ro";
 
   // Extract unique categories
-  const categories = [...new Set(siteData.projects.items.map(p => p.category).filter(Boolean))];
+  const categories = [...new Set(siteData.projects.items.map(p => {
+    const category = getLocalizedContent(p.category, lang);
+    return category;
+  }).filter(Boolean))];
 
   useEffect(() => {
     if (activeCategory) {
-      setFilteredProjects(siteData.projects.items.filter(p => p.category === activeCategory));
+      setFilteredProjects(siteData.projects.items.filter(p => 
+        getLocalizedContent(p.category, lang) === activeCategory
+      ));
     } else {
       setFilteredProjects(siteData.projects.items);
     }
-  }, [activeCategory, siteData.projects.items]);
+  }, [activeCategory, siteData.projects.items, lang]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -68,9 +73,9 @@ const Projects = () => {
                  "Все"}
               </Badge>
               
-              {categories.map(category => (
+              {categories.map((category, index) => (
                 <Badge 
-                  key={category}
+                  key={`category-${index}`}
                   variant={activeCategory === category ? "default" : "outline"}
                   className="cursor-pointer text-sm px-4 py-2"
                   onClick={() => setActiveCategory(category as string)}
@@ -92,7 +97,7 @@ const Projects = () => {
                     />
                     {project.category && (
                       <div className="absolute top-3 right-3 bg-construction-accent/90 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        {project.category}
+                        {getLocalizedContent(project.category, lang)}
                       </div>
                     )}
                   </div>

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types for multilingual content
@@ -44,13 +43,13 @@ export interface SiteData {
     description: string | LanguageContent;
     info: {
       location: string | LanguageContent;
-      phone: string;
-      email: string;
+      phone: string | LanguageContent;
+      email: string | LanguageContent;
     };
     schedule: {
-      weekdays: string;
-      saturday: string;
-      sunday: string;
+      weekdays: string | LanguageContent;
+      saturday: string | LanguageContent;
+      sunday: string | LanguageContent;
     };
     styles?: {
       titleFont?: string;
@@ -206,7 +205,7 @@ const initialSiteData: SiteData = {
         description: {
           ro: 'Echipa noastră de experți are ani de experiență în domeniul construcțiilor.',
           en: 'Our team of experts has years of experience in the construction field.',
-          ru: 'Наша команда экспертов имеет многолетний опыт в области строительства.'
+          ru: 'Наша команда экспертов имеет многолетний опыт в области строите��ьства.'
         },
       },
       {
@@ -268,13 +267,33 @@ const initialSiteData: SiteData = {
         en: '[Your address here]',
         ru: '[Ваш адрес здесь]'
       },
-      phone: '[Numărul tău de contact]',
-      email: '[Adresa ta de email]',
+      phone: {
+        ro: '[Numărul tău de contact]',
+        en: '[Your contact number]',
+        ru: '[Ваш контактный номер]'
+      },
+      email: {
+        ro: '[Adresa ta de email]',
+        en: '[Your email address]',
+        ru: '[Ваш адрес электронной почты]'
+      }
     },
     schedule: {
-      weekdays: '08:00 - 18:00',
-      saturday: '09:00 - 14:00',
-      sunday: 'Închis',
+      weekdays: {
+        ro: '08:00 - 18:00',
+        en: '08:00 - 18:00',
+        ru: '08:00 - 18:00'
+      },
+      saturday: {
+        ro: '09:00 - 14:00',
+        en: '09:00 - 14:00',
+        ru: '09:00 - 14:00'
+      },
+      sunday: {
+        ro: 'Închis',
+        en: 'Closed',
+        ru: 'Закрыто'
+      }
     },
     styles: {
       titleFont: "font-sans",
