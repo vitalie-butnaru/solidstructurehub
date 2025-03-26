@@ -3,6 +3,13 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Menu, X, ChevronRight, Globe } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +23,7 @@ const Navbar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const language = searchParams.get("lang") || "ro";
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,7 +94,7 @@ const Navbar = () => {
             </button>
           ))}
           
-          {/* Language Switcher */}
+          {/* Language Switcher - Desktop */}
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center text-construction-700 hover:text-construction-accent transition-colors">
               <Globe className="h-4 w-4 mr-1" />
@@ -115,63 +123,69 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={cn(
-          'fixed inset-0 bg-construction-900/95 backdrop-blur-md z-40 transition-transform duration-300 transform md:hidden',
-          isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
-        )}
-      >
-        <div className="container h-full flex flex-col items-center justify-center">
-          <div className="space-y-8 w-full">
-            {['servicii', 'proiecte', 'de-ce-noi', 'contact'].map((item, index) => (
-              <div key={item} className="overflow-hidden">
-                <button
-                  onClick={() => {
-                    if (item === 'proiecte' && location.pathname !== "/") {
-                      window.location.href = "/proiecte";
-                    } else {
-                      scrollToSection(item);
-                    }
-                  }}
-                  className="text-2xl text-white hover:text-construction-accent flex items-center justify-center w-full py-4 transition-colors"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <span>
-                    {item === 'servicii' ? (language === 'ro' ? 'Servicii' : language === 'en' ? 'Services' : 'Услуги') : 
-                     item === 'proiecte' ? (language === 'ro' ? 'Proiecte' : language === 'en' ? 'Projects' : 'Проекты') :
-                     item === 'de-ce-noi' ? (language === 'ro' ? 'De Ce Noi' : language === 'en' ? 'Why Us' : 'Почему Мы') : 
-                     (language === 'ro' ? 'Contact' : language === 'en' ? 'Contact' : 'Контакты')}
-                  </span>
-                  <ChevronRight className="ml-2 animate-fade-in-right" />
-                </button>
+      {/* Mobile Menu - Using Sheet component from shadcn/ui */}
+      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <SheetContent side="top" className="pt-16 pb-8 px-6 bg-construction-900/95 backdrop-blur-md border-none text-white h-[100dvh]">
+          <div className="h-full flex flex-col justify-center">
+            {/* Navigation items */}
+            <div className="space-y-8 w-full">
+              {['servicii', 'proiecte', 'de-ce-noi', 'contact'].map((item, index) => (
+                <div key={item} className="overflow-hidden">
+                  <SheetClose asChild>
+                    <button
+                      onClick={() => {
+                        if (item === 'proiecte' && location.pathname !== "/") {
+                          window.location.href = "/proiecte";
+                        } else {
+                          scrollToSection(item);
+                        }
+                      }}
+                      className="text-2xl text-white hover:text-construction-accent flex items-center justify-center w-full py-4 transition-colors"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <span>
+                        {item === 'servicii' ? (language === 'ro' ? 'Servicii' : language === 'en' ? 'Services' : 'Услуги') : 
+                         item === 'proiecte' ? (language === 'ro' ? 'Proiecte' : language === 'en' ? 'Projects' : 'Проекты') :
+                         item === 'de-ce-noi' ? (language === 'ro' ? 'De Ce Noi' : language === 'en' ? 'Why Us' : 'Почему Мы') : 
+                         (language === 'ro' ? 'Contact' : language === 'en' ? 'Contact' : 'Контакты')}
+                      </span>
+                      <ChevronRight className="ml-2 animate-fade-in-right" />
+                    </button>
+                  </SheetClose>
+                </div>
+              ))}
+              
+              {/* Language options in mobile menu */}
+              <div className="flex justify-center space-x-4 mt-6">
+                <SheetClose asChild>
+                  <button 
+                    onClick={() => switchLanguage('ro')}
+                    className={`px-4 py-2 rounded-md ${language === 'ro' ? 'bg-construction-accent text-white' : 'text-white'}`}
+                  >
+                    RO
+                  </button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <button 
+                    onClick={() => switchLanguage('en')}
+                    className={`px-4 py-2 rounded-md ${language === 'en' ? 'bg-construction-accent text-white' : 'text-white'}`}
+                  >
+                    EN
+                  </button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <button 
+                    onClick={() => switchLanguage('ru')}
+                    className={`px-4 py-2 rounded-md ${language === 'ru' ? 'bg-construction-accent text-white' : 'text-white'}`}
+                  >
+                    RU
+                  </button>
+                </SheetClose>
               </div>
-            ))}
-            
-            {/* Language options in mobile menu */}
-            <div className="flex justify-center space-x-4 mt-6">
-              <button 
-                onClick={() => switchLanguage('ro')}
-                className={`px-4 py-2 rounded-md ${language === 'ro' ? 'bg-construction-accent text-white' : 'text-white'}`}
-              >
-                RO
-              </button>
-              <button 
-                onClick={() => switchLanguage('en')}
-                className={`px-4 py-2 rounded-md ${language === 'en' ? 'bg-construction-accent text-white' : 'text-white'}`}
-              >
-                EN
-              </button>
-              <button 
-                onClick={() => switchLanguage('ru')}
-                className={`px-4 py-2 rounded-md ${language === 'ru' ? 'bg-construction-accent text-white' : 'text-white'}`}
-              >
-                RU
-              </button>
             </div>
           </div>
-        </div>
-      </div>
+        </SheetContent>
+      </Sheet>
     </nav>
   );
 };

@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types for multilingual content
@@ -65,6 +66,11 @@ export interface SiteData {
     companyName: string;
     description: string | LanguageContent;
     copyright: string | LanguageContent;
+    logos?: {
+      main: string;
+      secondary?: string;
+    };
+    backgroundImage?: string;
   };
   projects: {
     items: {
@@ -75,6 +81,17 @@ export interface SiteData {
       category?: string | LanguageContent;
       date?: string;
     }[];
+    settings?: {
+      backgroundImage?: string;
+    };
+  };
+  // Global settings - general images used throughout the site
+  global?: {
+    siteLogo?: string;
+    favicon?: string;
+    defaultBackgroundImage?: string;
+    socialShareImage?: string;
+    errorPageImage?: string;
   };
 }
 
@@ -317,6 +334,10 @@ const initialSiteData: SiteData = {
       en: `© ${new Date().getFullYear()} ConstructPro. All rights reserved.`,
       ru: `© ${new Date().getFullYear()} ConstructPro. Все права защищены.`
     },
+    logos: {
+      main: 'https://placehold.co/200x80?text=CONSTRUCTPRO'
+    },
+    backgroundImage: 'https://images.unsplash.com/photo-1510797215324-95aa89f43c33?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80'
   },
   projects: {
     items: [
@@ -401,7 +422,17 @@ const initialSiteData: SiteData = {
         date: 'Martie 2023',
       },
     ],
+    settings: {
+      backgroundImage: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80'
+    }
   },
+  global: {
+    siteLogo: 'https://placehold.co/200x80?text=CONSTRUCTPRO',
+    favicon: 'https://placehold.co/64x64?text=CP',
+    defaultBackgroundImage: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c77',
+    socialShareImage: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c77',
+    errorPageImage: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
+  }
 };
 
 // Context pentru autentificare și date
@@ -459,6 +490,26 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Adăugăm proiecte dacă nu există
         if (!parsedData.projects) {
           parsedData.projects = initialSiteData.projects;
+        }
+        
+        // Adăugăm settings pentru proiecte dacă nu există
+        if (!parsedData.projects.settings) {
+          parsedData.projects.settings = initialSiteData.projects.settings;
+        }
+        
+        // Adăugăm logos pentru footer dacă nu există
+        if (!parsedData.footer.logos) {
+          parsedData.footer.logos = initialSiteData.footer.logos;
+        }
+        
+        // Adăugăm backgroundImage pentru footer dacă nu există
+        if (!parsedData.footer.backgroundImage) {
+          parsedData.footer.backgroundImage = initialSiteData.footer.backgroundImage;
+        }
+        
+        // Adăugăm global settings dacă nu există
+        if (!parsedData.global) {
+          parsedData.global = initialSiteData.global;
         }
         
         setSiteData(parsedData);
