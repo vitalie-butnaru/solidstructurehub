@@ -5,13 +5,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useSite } from '@/contexts/SiteContext';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
-
-// Helper to get content based on language
-const getLocalizedContent = (content: string | { ro: string; en: string; ru: string } | undefined, lang: string): string => {
-  if (!content) return '';
-  if (typeof content === 'string') return content;
-  return content[lang as keyof typeof content] || content.ro || '';
-};
+import ProjectLightbox from './ProjectLightbox';
+import { getLocalizedContent } from "@/utils/languageUtils";
 
 const ProjectsCarousel = () => {
   const { siteData } = useSite();
@@ -49,33 +44,35 @@ const ProjectsCarousel = () => {
             {projects.map((project) => (
               <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/2">
                 <div className="p-2 h-full">
-                  <div className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
-                    <div className="relative h-60 overflow-hidden">
-                      <img 
-                        src={project.imageSrc} 
-                        alt={getLocalizedContent(project.title, lang)} 
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                      {project.category && (
-                        <div className="absolute top-3 right-3 bg-construction-accent/90 text-white px-3 py-1 rounded-full text-xs font-medium">
-                          {getLocalizedContent(project.category, lang)}
-                        </div>
-                      )}
+                  <ProjectLightbox project={project}>
+                    <div className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px]">
+                      <div className="relative h-60 overflow-hidden">
+                        <img 
+                          src={project.imageSrc} 
+                          alt={getLocalizedContent(project.title, lang)} 
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                        {project.category && (
+                          <div className="absolute top-3 right-3 bg-construction-accent/90 text-white px-3 py-1 rounded-full text-xs font-medium">
+                            {getLocalizedContent(project.category, lang)}
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-5 flex-grow flex flex-col">
+                        <h3 className="text-xl font-semibold text-construction-900 mb-2">
+                          {getLocalizedContent(project.title, lang)}
+                        </h3>
+                        <p className="text-construction-600 flex-grow line-clamp-3">
+                          {getLocalizedContent(project.description, lang)}
+                        </p>
+                        {project.date && (
+                          <div className="mt-3 text-sm text-construction-500">
+                            {project.date}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="p-5 flex-grow flex flex-col">
-                      <h3 className="text-xl font-semibold text-construction-900 mb-2">
-                        {getLocalizedContent(project.title, lang)}
-                      </h3>
-                      <p className="text-construction-600 flex-grow">
-                        {getLocalizedContent(project.description, lang)}
-                      </p>
-                      {project.date && (
-                        <div className="mt-3 text-sm text-construction-500">
-                          {project.date}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  </ProjectLightbox>
                 </div>
               </CarouselItem>
             ))}

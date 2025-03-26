@@ -115,77 +115,77 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-construction-800 focus:outline-none"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Mobile Menu - Using Sheet component from shadcn/ui */}
-      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side="top" className="pt-16 pb-8 px-6 bg-construction-900/95 backdrop-blur-md border-none text-white h-[100dvh]">
-          <div className="h-full flex flex-col justify-center">
-            {/* Navigation items */}
-            <div className="space-y-8 w-full">
-              {['servicii', 'proiecte', 'de-ce-noi', 'contact'].map((item, index) => (
-                <div key={item} className="overflow-hidden">
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <button
+              className="md:hidden text-construction-800 focus:outline-none"
+              aria-label="Open mobile menu"
+            >
+              <Menu size={24} />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="top" className="pt-16 pb-8 px-6 bg-construction-900/95 backdrop-blur-md border-none text-white h-[100dvh]">
+            <div className="h-full flex flex-col justify-center">
+              {/* Navigation items */}
+              <div className="space-y-8 w-full">
+                {['servicii', 'proiecte', 'de-ce-noi', 'contact'].map((item, index) => (
+                  <div key={item} className="overflow-hidden">
+                    <SheetClose asChild>
+                      <button
+                        onClick={() => {
+                          if (item === 'proiecte' && location.pathname !== "/") {
+                            window.location.href = "/proiecte";
+                          } else {
+                            scrollToSection(item);
+                          }
+                        }}
+                        className="text-2xl text-white hover:text-construction-accent flex items-center justify-center w-full py-4 transition-colors uppercase"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <span>
+                          {item === 'servicii' ? (language === 'ro' ? 'Servicii' : language === 'en' ? 'Services' : 'Услуги') : 
+                           item === 'proiecte' ? (language === 'ro' ? 'Proiecte' : language === 'en' ? 'Projects' : 'Проекты') :
+                           item === 'de-ce-noi' ? (language === 'ro' ? 'De Ce Noi' : language === 'en' ? 'Why Us' : 'Почему Мы') : 
+                           (language === 'ro' ? 'Contact' : language === 'en' ? 'Contact' : 'Контакты')}
+                        </span>
+                        <ChevronRight className="ml-2 animate-fade-in-right" />
+                      </button>
+                    </SheetClose>
+                  </div>
+                ))}
+                
+                {/* Language options in mobile menu */}
+                <div className="flex justify-center space-x-4 mt-6">
                   <SheetClose asChild>
-                    <button
-                      onClick={() => {
-                        if (item === 'proiecte' && location.pathname !== "/") {
-                          window.location.href = "/proiecte";
-                        } else {
-                          scrollToSection(item);
-                        }
-                      }}
-                      className="text-2xl text-white hover:text-construction-accent flex items-center justify-center w-full py-4 transition-colors uppercase"
-                      style={{ animationDelay: `${index * 100}ms` }}
+                    <button 
+                      onClick={() => switchLanguage('ro')}
+                      className={`px-4 py-2 rounded-md ${language === 'ro' ? 'bg-construction-accent text-white' : 'text-white'}`}
                     >
-                      <span>
-                        {item === 'servicii' ? (language === 'ro' ? 'Servicii' : language === 'en' ? 'Services' : 'Услуги') : 
-                         item === 'proiecte' ? (language === 'ro' ? 'Proiecte' : language === 'en' ? 'Projects' : 'Проекты') :
-                         item === 'de-ce-noi' ? (language === 'ro' ? 'De Ce Noi' : language === 'en' ? 'Why Us' : 'Почему Мы') : 
-                         (language === 'ro' ? 'Contact' : language === 'en' ? 'Contact' : 'Контакты')}
-                      </span>
-                      <ChevronRight className="ml-2 animate-fade-in-right" />
+                      RO
+                    </button>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <button 
+                      onClick={() => switchLanguage('en')}
+                      className={`px-4 py-2 rounded-md ${language === 'en' ? 'bg-construction-accent text-white' : 'text-white'}`}
+                    >
+                      EN
+                    </button>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <button 
+                      onClick={() => switchLanguage('ru')}
+                      className={`px-4 py-2 rounded-md ${language === 'ru' ? 'bg-construction-accent text-white' : 'text-white'}`}
+                    >
+                      RU
                     </button>
                   </SheetClose>
                 </div>
-              ))}
-              
-              {/* Language options in mobile menu */}
-              <div className="flex justify-center space-x-4 mt-6">
-                <SheetClose asChild>
-                  <button 
-                    onClick={() => switchLanguage('ro')}
-                    className={`px-4 py-2 rounded-md ${language === 'ro' ? 'bg-construction-accent text-white' : 'text-white'}`}
-                  >
-                    RO
-                  </button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <button 
-                    onClick={() => switchLanguage('en')}
-                    className={`px-4 py-2 rounded-md ${language === 'en' ? 'bg-construction-accent text-white' : 'text-white'}`}
-                  >
-                    EN
-                  </button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <button 
-                    onClick={() => switchLanguage('ru')}
-                    className={`px-4 py-2 rounded-md ${language === 'ru' ? 'bg-construction-accent text-white' : 'text-white'}`}
-                  >
-                    RU
-                  </button>
-                </SheetClose>
               </div>
             </div>
-          </div>
-        </SheetContent>
-      </Sheet>
+          </SheetContent>
+        </Sheet>
+      </div>
     </nav>
   );
 };

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { getLocalizedContent } from "@/utils/languageUtils";
+import ProjectLightbox from "@/components/ProjectLightbox";
 
 const Projects = () => {
   const { siteData } = useSite();
@@ -88,34 +89,36 @@ const Projects = () => {
             {/* Projects grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {filteredProjects.map(project => (
-                <div key={project.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-lg">
-                  <div className="relative h-60 overflow-hidden">
-                    <img 
-                      src={project.imageSrc} 
-                      alt={getLocalizedContent(project.title, lang)} 
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                    {project.category && (
-                      <div className="absolute top-3 right-3 bg-construction-accent/90 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        {getLocalizedContent(project.category, lang)}
-                      </div>
-                    )}
+                <ProjectLightbox key={project.id} project={project}>
+                  <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg h-full flex flex-col">
+                    <div className="relative h-60 overflow-hidden">
+                      <img 
+                        src={project.imageSrc} 
+                        alt={getLocalizedContent(project.title, lang)} 
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      />
+                      {project.category && (
+                        <div className="absolute top-3 right-3 bg-construction-accent/90 text-white px-3 py-1 rounded-full text-xs font-medium">
+                          {getLocalizedContent(project.category, lang)}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="p-5 flex-grow flex flex-col">
+                      <h3 className="text-xl font-semibold text-construction-900 mb-2">
+                        {getLocalizedContent(project.title, lang)}
+                      </h3>
+                      <p className="text-construction-600 mb-4 line-clamp-3">
+                        {getLocalizedContent(project.description, lang)}
+                      </p>
+                      {project.date && (
+                        <div className="text-sm text-construction-500 mt-auto">
+                          {project.date}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  
-                  <div className="p-5">
-                    <h3 className="text-xl font-semibold text-construction-900 mb-2">
-                      {getLocalizedContent(project.title, lang)}
-                    </h3>
-                    <p className="text-construction-600 mb-4">
-                      {getLocalizedContent(project.description, lang)}
-                    </p>
-                    {project.date && (
-                      <div className="text-sm text-construction-500">
-                        {project.date}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                </ProjectLightbox>
               ))}
             </div>
             
