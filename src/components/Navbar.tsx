@@ -84,7 +84,7 @@ const Navbar = () => {
                   scrollToSection(item);
                 }
               }}
-              className="text-construction-700 hover:text-construction-accent transition-colors relative group"
+              className="text-construction-700 hover:text-construction-accent transition-colors relative group uppercase"
             >
               {item === 'servicii' ? (language === 'ro' ? 'Servicii' : language === 'en' ? 'Services' : 'Услуги') : 
                item === 'proiecte' ? (language === 'ro' ? 'Proiecte' : language === 'en' ? 'Projects' : 'Проекты') :
@@ -140,7 +140,7 @@ const Navbar = () => {
                           scrollToSection(item);
                         }
                       }}
-                      className="text-2xl text-white hover:text-construction-accent flex items-center justify-center w-full py-4 transition-colors"
+                      className="text-2xl text-white hover:text-construction-accent flex items-center justify-center w-full py-4 transition-colors uppercase"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <span>
