@@ -68,7 +68,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between">
         <div className="flex items-center">
           <Link to="/" className="text-2xl font-bold text-construction-900">
-            CONSTRUCT<span className="text-construction-accent">PRO</span>
+            LA<span className="text-construction-accent">TID</span>
           </Link>
         </div>
 

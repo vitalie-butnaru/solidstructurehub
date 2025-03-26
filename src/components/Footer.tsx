@@ -24,7 +24,7 @@ const Footer = ({ data }: FooterProps) => {
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div className="mb-8 md:mb-0">
-            <span className="text-3xl font-bold text-white">{getLocalizedContent(data.companyName, lang)}</span>
+            <span className="text-3xl font-bold text-white">{data.companyName}</span>
             <p className="mt-2 max-w-md">
               {getLocalizedContent(data.description, lang)}
             </p>

@@ -280,31 +280,31 @@ const initialSiteData: SiteData = {
     },
     info: {
       location: {
-        ro: '[Adresa ta aici]',
-        en: '[Your address here]',
-        ru: '[Ваш адрес здесь]'
+        ro: 'Strada Meșterul Manole 20, Chișinău',
+        en: 'Meșterul Manole Street 20, Chișinău',
+        ru: 'Улица Мештерул Маноле 20, Кишинёв'
       },
       phone: {
-        ro: '[Numărul tău de contact]',
-        en: '[Your contact number]',
-        ru: '[Ваш контактный номер]'
+        ro: '0690 14 027',
+        en: '0690 14 027',
+        ru: '0690 14 027'
       },
       email: {
-        ro: '[Adresa ta de email]',
-        en: '[Your email address]',
-        ru: '[Ваш адрес электронной почты]'
+        ro: 'Latid.serv@gmail.com',
+        en: 'Latid.serv@gmail.com',
+        ru: 'Latid.serv@gmail.com'
       }
     },
     schedule: {
       weekdays: {
-        ro: '08:00 - 18:00',
-        en: '08:00 - 18:00',
-        ru: '08:00 - 18:00'
+        ro: '09:00 - 17:00',
+        en: '09:00 - 17:00',
+        ru: '09:00 - 17:00'
       },
       saturday: {
-        ro: '09:00 - 14:00',
-        en: '09:00 - 14:00',
-        ru: '09:00 - 14:00'
+        ro: 'Închis',
+        en: 'Closed',
+        ru: 'Закрыто'
       },
       sunday: {
         ro: 'Închis',
@@ -323,19 +323,19 @@ const initialSiteData: SiteData = {
     }
   },
   footer: {
-    companyName: 'CONSTRUCTPRO',
+    companyName: 'LATID',
     description: {
       ro: 'Construim viitorul, cu structuri solide și durabile. Oferim servicii complete de construcții industriale și rezidențiale.',
       en: 'Building the future with solid and durable structures. We offer complete industrial and residential construction services.',
       ru: 'Строим будущее с прочными и долговечными конструкциями. Мы предлагаем полный спектр услуг промышленного и жилищного строительства.'
     },
     copyright: {
-      ro: `© ${new Date().getFullYear()} ConstructPro. Toate drepturile rezervate.`,
-      en: `© ${new Date().getFullYear()} ConstructPro. All rights reserved.`,
-      ru: `© ${new Date().getFullYear()} ConstructPro. Все права защищены.`
+      ro: `© ${new Date().getFullYear()} S.R.L. LATID - SERV. Toate drepturile rezervate.`,
+      en: `© ${new Date().getFullYear()} S.R.L. LATID - SERV. All rights reserved.`,
+      ru: `© ${new Date().getFullYear()} S.R.L. LATID - SERV. Все права защищены.`
     },
     logos: {
-      main: 'https://placehold.co/200x80?text=CONSTRUCTPRO'
+      main: 'https://placehold.co/200x80?text=LATID'
     },
     backgroundImage: 'https://images.unsplash.com/photo-1510797215324-95aa89f43c33?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80'
   },
@@ -427,8 +427,8 @@ const initialSiteData: SiteData = {
     }
   },
   global: {
-    siteLogo: 'https://placehold.co/200x80?text=CONSTRUCTPRO',
-    favicon: 'https://placehold.co/64x64?text=CP',
+    siteLogo: 'https://placehold.co/200x80?text=LATID',
+    favicon: 'https://placehold.co/64x64?text=LS',
     defaultBackgroundImage: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c77',
     socialShareImage: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c77',
     errorPageImage: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1700&h=800&q=80',
