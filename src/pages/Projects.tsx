@@ -89,7 +89,7 @@ const Projects = () => {
             {/* Projects grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {filteredProjects.map(project => (
-                <ProjectLightbox key={project.id} project={project}>
+                <ProjectLightbox key={String(project.id)} project={{...project, id: String(project.id)}}>
                   <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg h-full flex flex-col">
                     <div className="relative h-60 overflow-hidden">
                       <img 

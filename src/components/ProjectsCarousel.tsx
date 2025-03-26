@@ -42,9 +42,9 @@ const ProjectsCarousel = () => {
         >
           <CarouselContent>
             {projects.map((project) => (
-              <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/2">
+              <CarouselItem key={String(project.id)} className="md:basis-1/2 lg:basis-1/2">
                 <div className="p-2 h-full">
-                  <ProjectLightbox project={project}>
+                  <ProjectLightbox project={{...project, id: String(project.id)}}>
                     <div className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px]">
                       <div className="relative h-60 overflow-hidden">
                         <img 
