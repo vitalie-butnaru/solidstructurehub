@@ -33,8 +33,9 @@ const ProjectLightbox = ({ project, children }: ProjectLightboxProps) => {
         <div className="cursor-pointer h-full">{children}</div>
       </DialogTrigger>
       <DialogContent className="w-[85vw] max-w-[85vw] p-0 bg-white overflow-hidden rounded-lg">
-        <div className="relative flex flex-col max-h-[85vh]">
-          <div className="h-[50vh] md:h-[60vh] relative">
+        <div className="relative flex flex-col md:flex-row md:max-h-[85vh]">
+          {/* Image carousel - adjusted height for better display on all screen sizes */}
+          <div className="h-[40vh] md:h-[60vh] md:w-[60%] relative">
             <Carousel 
               className="w-full h-full" 
               setActiveIndex={setActiveIndex}
@@ -83,15 +84,16 @@ const ProjectLightbox = ({ project, children }: ProjectLightboxProps) => {
             </Carousel>
           </div>
           
-          <div className="p-6 overflow-y-auto">
-            <h3 className="text-2xl font-bold text-construction-900 mb-4">
+          {/* Text content - better spacing and scrollable for long content */}
+          <div className="p-6 md:p-8 md:w-[40%] overflow-y-auto flex flex-col">
+            <h3 className="text-2xl font-bold text-construction-900 mb-6">
               {getLocalizedContent(project.title, lang)}
             </h3>
-            <p className="text-construction-600 mb-6">
+            <p className="text-construction-600 mb-8 leading-relaxed">
               {getLocalizedContent(project.description, lang)}
             </p>
             {project.date && (
-              <div className="text-sm text-construction-500 mt-auto">
+              <div className="text-sm text-construction-500 mt-auto pt-4 border-t border-gray-100">
                 {project.date}
               </div>
             )}

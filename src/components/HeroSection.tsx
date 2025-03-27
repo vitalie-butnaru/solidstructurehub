@@ -82,26 +82,16 @@ const HeroSection = ({ data }: HeroSectionProps) => {
             {getLocalizedContent(data.description, lang)}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 opacity-0 animate-fade-in animate-delay-500">
+          <div className="flex justify-center mt-8 opacity-0 animate-fade-in animate-delay-500">
             <button 
               onClick={scrollToServices}
-              className="px-8 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-construction-accent/20"
+              className="px-8 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-construction-accent/20 flex items-center gap-3"
             >
               {getLocalizedContent(data.ctaText, lang)}
+              <ArrowDown className="animate-float h-5 w-5" />
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Scroll Down Indicator */}
-      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-10 opacity-0 animate-fade-in animate-delay-700">
-        <button 
-          onClick={scrollToServices}
-          className="flex flex-col items-center text-construction-100 hover:text-white transition-colors"
-        >
-          <span className="text-sm mb-2">Descoperă mai mult</span>
-          <ArrowDown className="animate-float" size={24} />
-        </button>
       </div>
     </section>
   );
