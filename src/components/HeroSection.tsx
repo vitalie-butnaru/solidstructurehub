@@ -12,7 +12,7 @@ interface HeroSectionProps {
 const HeroSection = ({ data }: HeroSectionProps) => {
   const [searchParams] = useSearchParams();
   const lang = searchParams.get("lang") || "ro";
-  const [currentBackground, setCurrentBackground] = useState<string | undefined>(data.backgroundImage);
+  const [currentBackground, setCurrentBackground] = useState<string | undefined>(undefined);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [backgrounds, setBackgrounds] = useState<string[]>([]);
   
@@ -23,17 +23,24 @@ const HeroSection = ({ data }: HeroSectionProps) => {
     const validImages = [
       data.backgroundImage,
       ...(data.additionalImages || [])
-    ].filter(Boolean) as string[];
+    ].filter(img => img && typeof img === 'string' && img.trim() !== '') as string[];
     
     console.log("Valid images:", validImages);
     
-    setBackgrounds(validImages);
-    
-    // Reset current background to the new one from data
     if (validImages.length > 0) {
-      setCurrentBackground(validImages[0]);
+      setBackgrounds(validImages);
+      
+      // Only set background if it's not already set or needs to be updated
+      if (!currentBackground || !validImages.includes(currentBackground)) {
+        setCurrentBackground(validImages[0]);
+      }
+    } else {
+      // Fallback to a default image if no valid images are available
+      const defaultImage = "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77";
+      setBackgrounds([defaultImage]);
+      setCurrentBackground(defaultImage);
     }
-  }, [data]);
+  }, [data, data.backgroundImage, data.additionalImages]);
 
   // Background image rotation
   useEffect(() => {
@@ -42,19 +49,24 @@ const HeroSection = ({ data }: HeroSectionProps) => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
-        if (!currentBackground || backgrounds.length === 0) {
-          setCurrentBackground(backgrounds[0]);
-        } else {
-          const currentIndex = backgrounds.indexOf(currentBackground);
+        setCurrentBackground(prevBackground => {
+          if (!prevBackground || backgrounds.length === 0) {
+            return backgrounds[0];
+          }
+          
+          const currentIndex = backgrounds.indexOf(prevBackground);
+          if (currentIndex === -1) return backgrounds[0]; // Image not found, reset to first
+          
           const nextIndex = (currentIndex + 1) % backgrounds.length;
-          setCurrentBackground(backgrounds[nextIndex]);
-        }
+          return backgrounds[nextIndex];
+        });
+        
         setIsTransitioning(false);
       }, 500);
     }, 7000);
 
     return () => clearInterval(interval);
-  }, [currentBackground, backgrounds]);
+  }, [backgrounds]);
 
   const scrollToServices = () => {
     const servicesSection = document.getElementById('servicii');

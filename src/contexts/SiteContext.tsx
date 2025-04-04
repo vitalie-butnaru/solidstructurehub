@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types for multilingual content
@@ -513,6 +512,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         setSiteData(parsedData);
+        console.log("Site data loaded from localStorage:", parsedData);
       } catch (error) {
         console.error("Error parsing stored site data:", error);
         // Fallback to initial data if parsing fails

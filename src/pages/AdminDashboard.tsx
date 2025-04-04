@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSite } from "@/contexts/SiteContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { LogOut, Home, PanelRight, Globe, Settings, RefreshCw } from "lucide-react";
+import { LogOut, Home, PanelRight, Globe, Settings, RefreshCw, Download, Upload } from "lucide-react";
 import HeroEditor from "@/components/admin/HeroEditor";
 import ServicesEditor from "@/components/admin/ServicesEditor";
 import WhyChooseUsEditor from "@/components/admin/WhyChooseUsEditor";
@@ -31,6 +30,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { RO, GB, RU } from 'country-flag-icons/react/3x2';
+import { saveAs } from 'file-saver';
 
 const AdminDashboard = () => {
   const { logout, siteData, updateSiteData } = useSite();
@@ -38,6 +38,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("hero");
   const [previewLang, setPreviewLang] = useState("ro");
   const isMobile = useIsMobile();
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -75,9 +76,45 @@ const AdminDashboard = () => {
     toast.success("Cache-ul a fost curățat cu succes!");
   };
 
+  const exportSiteData = () => {
+    const dataStr = JSON.stringify(siteData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    saveAs(dataBlob, `site-config-${new Date().toISOString().split('T')[0]}.json`);
+    toast.success("Configurația site-ului a fost exportată cu succes!");
+  };
+
+  const importSiteData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    
+    reader.onload = (event) => {
+      try {
+        const importedData = JSON.parse(event.target?.result as string);
+        updateSiteData(importedData);
+        toast.success("Configurația site-ului a fost importată cu succes!");
+      } catch (error) {
+        console.error("Error importing site data:", error);
+        toast.error("Eroare la importarea configurației. Verificați formatul fișierului.");
+      } finally {
+        setIsUploading(false);
+        e.target.value = '';
+      }
+    };
+    
+    reader.onerror = () => {
+      toast.error("Eroare la citirea fișierului.");
+      setIsUploading(false);
+      e.target.value = '';
+    };
+    
+    reader.readAsText(file);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
@@ -85,17 +122,50 @@ const AdminDashboard = () => {
             <h1 className="text-xl font-bold text-construction-900">Panel Administrare</h1>
           </div>
           <div className="flex items-center space-x-2 md:space-x-4">
-            {/* Clear Cache Button */}
-            <Button 
-              variant="outline" 
-              size={isMobile ? "icon" : "sm"}
-              onClick={clearCache}
-              title="Curăță cache"
-              className="flex items-center"
-            >
-              <RefreshCw className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
-              {!isMobile && "Curăță cache"}
-            </Button>
+            <div className="flex items-center space-x-2 border-r pr-2 mr-2">
+              <Button 
+                variant="outline" 
+                size={isMobile ? "icon" : "sm"}
+                onClick={exportSiteData}
+                title="Exportă configurația"
+                className="flex items-center"
+              >
+                <Download className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
+                {!isMobile && "Exportă"}
+              </Button>
+              
+              <div className="relative">
+                <input
+                  type="file"
+                  id="config-import"
+                  accept=".json"
+                  onChange={importSiteData}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  disabled={isUploading}
+                />
+                <Button 
+                  variant="outline" 
+                  size={isMobile ? "icon" : "sm"}
+                  disabled={isUploading}
+                  title="Importă configurația"
+                  className="flex items-center relative"
+                >
+                  <Upload className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
+                  {!isMobile && "Importă"}
+                </Button>
+              </div>
+              
+              <Button 
+                variant="outline" 
+                size={isMobile ? "icon" : "sm"}
+                onClick={clearCache}
+                title="Curăță cache"
+                className="flex items-center"
+              >
+                <RefreshCw className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
+                {!isMobile && "Curăță cache"}
+              </Button>
+            </div>
             
             {isMobile ? (
               <Sheet>
@@ -202,7 +272,6 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-8 flex-1">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="w-full flex border-b overflow-x-auto">
@@ -260,10 +329,12 @@ const AdminDashboard = () => {
         </Tabs>
       </div>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-4">
         <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-          Panel de administrare ConstructPro © {new Date().getFullYear()}
+          <p>Panel de administrare ConstructPro © {new Date().getFullYear()}</p>
+          <p className="text-xs mt-1 text-gray-400">
+            Pentru persistența datelor între sesiuni, exportați configurația și încărcați-o pe noul dispozitiv.
+          </p>
         </div>
       </footer>
     </div>
