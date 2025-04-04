@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types for multilingual content
@@ -434,6 +435,9 @@ const initialSiteData: SiteData = {
   }
 };
 
+// Make a deep copy of the initial data to use for resetting
+const getInitialDataCopy = () => JSON.parse(JSON.stringify(initialSiteData));
+
 // Context pentru autentificare și date
 interface SiteContextType {
   isAuthenticated: boolean;
@@ -441,6 +445,7 @@ interface SiteContextType {
   logout: () => void;
   siteData: SiteData;
   updateSiteData: (newData: SiteData) => void;
+  resetToDefaults: () => void;
 }
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
@@ -460,59 +465,11 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
-        // Ensure styles are properly copied from stored data or initialized
-        if (parsedData.contact && !parsedData.contact.styles) {
-          parsedData.contact.styles = initialSiteData.contact.styles;
-        }
         
-        // Asigurăm compatibilitatea cu versiunea anterioară a datelor
-        // Adăugăm proprietățile noi dacă nu există
-        if (!parsedData.hero.additionalImages) {
-          parsedData.hero.additionalImages = initialSiteData.hero.additionalImages;
-        }
-        
-        if (!parsedData.whyChooseUs.backgroundImage) {
-          parsedData.whyChooseUs.backgroundImage = initialSiteData.whyChooseUs.backgroundImage;
-        }
-        
-        // Adăugăm imagini pentru fiecare serviciu dacă nu există
-        if (parsedData.services && parsedData.services.items) {
-          parsedData.services.items = parsedData.services.items.map((item: any) => {
-            if (!item.galleryImages) {
-              const initialItem = initialSiteData.services.items.find(i => i.id === item.id);
-              item.galleryImages = initialItem ? initialItem.galleryImages : [];
-            }
-            return item;
-          });
-        }
-        
-        // Adăugăm proiecte dacă nu există
-        if (!parsedData.projects) {
-          parsedData.projects = initialSiteData.projects;
-        }
-        
-        // Adăugăm settings pentru proiecte dacă nu există
-        if (!parsedData.projects.settings) {
-          parsedData.projects.settings = initialSiteData.projects.settings;
-        }
-        
-        // Adăugăm logos pentru footer dacă nu există
-        if (!parsedData.footer.logos) {
-          parsedData.footer.logos = initialSiteData.footer.logos;
-        }
-        
-        // Adăugăm backgroundImage pentru footer dacă nu există
-        if (!parsedData.footer.backgroundImage) {
-          parsedData.footer.backgroundImage = initialSiteData.footer.backgroundImage;
-        }
-        
-        // Adăugăm global settings dacă nu există
-        if (!parsedData.global) {
-          parsedData.global = initialSiteData.global;
-        }
-        
-        setSiteData(parsedData);
-        console.log("Site data loaded from localStorage:", parsedData);
+        // Validăm și actualizăm datele pentru a ne asigura că sunt corecte
+        const validatedData = validateAndUpdateData(parsedData);
+        setSiteData(validatedData);
+        console.log("Site data loaded from localStorage:", validatedData);
       } catch (error) {
         console.error("Error parsing stored site data:", error);
         // Fallback to initial data if parsing fails
@@ -523,6 +480,103 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('siteData', JSON.stringify(initialSiteData));
     }
   }, []);
+
+  // Funcție pentru validarea și actualizarea datelor
+  const validateAndUpdateData = (parsedData: any): SiteData => {
+    // Creăm o copie a datelor inițiale pentru a ne asigura că avem toate câmpurile
+    const validatedData = { ...getInitialDataCopy() };
+    
+    // Actualizăm cu datele încărcate, păstrând structura completă
+    try {
+      // Verificăm secțiunea Hero
+      if (parsedData.hero) {
+        validatedData.hero = {
+          ...validatedData.hero,
+          ...parsedData.hero,
+          // Verificăm specific pentru additionalImages, asigurându-ne că este un array
+          additionalImages: Array.isArray(parsedData.hero.additionalImages) 
+            ? parsedData.hero.additionalImages 
+            : validatedData.hero.additionalImages
+        };
+      }
+
+      // Verificăm secțiunea Services
+      if (parsedData.services) {
+        validatedData.services = {
+          ...validatedData.services,
+          ...parsedData.services,
+          // Verificăm că avem items și că este un array
+          items: Array.isArray(parsedData.services.items)
+            ? parsedData.services.items.map((item: any) => ({
+                ...item,
+                // Asigurăm-ne că fiecare item are galleryImages și că este un array
+                galleryImages: Array.isArray(item.galleryImages) 
+                  ? item.galleryImages 
+                  : []
+              }))
+            : validatedData.services.items
+        };
+      }
+
+      // Verificăm secțiunea Why Choose Us
+      if (parsedData.whyChooseUs) {
+        validatedData.whyChooseUs = {
+          ...validatedData.whyChooseUs,
+          ...parsedData.whyChooseUs,
+          // Verificăm că avem benefits și că este un array
+          benefits: Array.isArray(parsedData.whyChooseUs.benefits)
+            ? parsedData.whyChooseUs.benefits
+            : validatedData.whyChooseUs.benefits
+        };
+      }
+
+      // Verificăm secțiunea Contact
+      if (parsedData.contact) {
+        validatedData.contact = {
+          ...validatedData.contact,
+          ...parsedData.contact,
+          // Asigurăm-ne că avem styles
+          styles: parsedData.contact.styles || validatedData.contact.styles
+        };
+      }
+
+      // Verificăm secțiunea Footer
+      if (parsedData.footer) {
+        validatedData.footer = {
+          ...validatedData.footer,
+          ...parsedData.footer,
+          // Asigurăm-ne că avem logos
+          logos: parsedData.footer.logos || validatedData.footer.logos
+        };
+      }
+
+      // Verificăm secțiunea Projects
+      if (parsedData.projects) {
+        validatedData.projects = {
+          ...validatedData.projects,
+          ...parsedData.projects,
+          // Verificăm că avem items și că este un array
+          items: Array.isArray(parsedData.projects.items)
+            ? parsedData.projects.items
+            : validatedData.projects.items,
+          // Asigurăm-ne că avem settings
+          settings: parsedData.projects.settings || validatedData.projects.settings
+        };
+      }
+
+      // Verificăm secțiunea Global
+      if (parsedData.global) {
+        validatedData.global = {
+          ...validatedData.global,
+          ...parsedData.global
+        };
+      }
+    } catch (error) {
+      console.error("Error validating data:", error);
+    }
+    
+    return validatedData;
+  };
 
   // Salvăm datele în localStorage când se modifică
   useEffect(() => {
@@ -555,6 +609,13 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateSiteData = (newData: SiteData) => {
     setSiteData(newData);
   };
+  
+  // Funcție pentru resetarea datelor la valorile implicite
+  const resetToDefaults = () => {
+    const defaultData = getInitialDataCopy();
+    setSiteData(defaultData);
+    localStorage.setItem('siteData', JSON.stringify(defaultData));
+  };
 
   return (
     <SiteContext.Provider
@@ -564,6 +625,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         siteData,
         updateSiteData,
+        resetToDefaults,
       }}
     >
       {children}

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSite } from "@/contexts/SiteContext";
@@ -33,7 +34,7 @@ import { RO, GB, RU } from 'country-flag-icons/react/3x2';
 import { saveAs } from 'file-saver';
 
 const AdminDashboard = () => {
-  const { logout, siteData, updateSiteData } = useSite();
+  const { logout, siteData, updateSiteData, resetToDefaults } = useSite();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("hero");
   const [previewLang, setPreviewLang] = useState("ro");
@@ -74,6 +75,13 @@ const AdminDashboard = () => {
     }
     
     toast.success("Cache-ul a fost curățat cu succes!");
+  };
+
+  const resetData = () => {
+    if (confirm("Sigur doriți să resetați toate datele la valorile implicite? Această acțiune nu poate fi anulată.")) {
+      resetToDefaults();
+      toast.success("Toate datele au fost resetate la valorile implicite!");
+    }
   };
 
   const exportSiteData = () => {
@@ -164,6 +172,17 @@ const AdminDashboard = () => {
               >
                 <RefreshCw className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
                 {!isMobile && "Curăță cache"}
+              </Button>
+
+              <Button 
+                variant="outline" 
+                size={isMobile ? "icon" : "sm"}
+                onClick={resetData}
+                title="Resetare date"
+                className="flex items-center text-red-500 hover:bg-red-50"
+              >
+                <RefreshCw className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
+                {!isMobile && "Resetare"}
               </Button>
             </div>
             
@@ -333,8 +352,15 @@ const AdminDashboard = () => {
         <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
           <p>Panel de administrare ConstructPro © {new Date().getFullYear()}</p>
           <p className="text-xs mt-1 text-gray-400">
-            Pentru persistența datelor între sesiuni, exportați configurația și încărcați-o pe noul dispozitiv.
+            Pentru persistența datelor între sesiuni, exportați configurația și încărcați-o pe noul dispozitiv sau server.
           </p>
+          <div className="mt-3 text-xs border-t pt-3 max-w-md mx-auto">
+            <p className="text-amber-600">
+              <strong>IMPORTANT:</strong> După modificări, folosiți butonul "Exportă" pentru a salva un fișier JSON 
+              cu configurația actualizată. Pentru actualizarea site-ului în producție, încărcați acest fișier 
+              pe server și importați-l în panoul de administrare.
+            </p>
+          </div>
         </div>
       </footer>
     </div>

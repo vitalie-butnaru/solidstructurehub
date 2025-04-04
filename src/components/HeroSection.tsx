@@ -75,6 +75,16 @@ const HeroSection = ({ data }: HeroSectionProps) => {
     }
   };
 
+  // Preload images to ensure smoother transitions
+  useEffect(() => {
+    if (backgrounds.length > 0) {
+      backgrounds.forEach(imgSrc => {
+        const img = new Image();
+        img.src = imgSrc;
+      });
+    }
+  }, [backgrounds]);
+
   return (
     <section className="relative min-h-screen w-full flex items-center justify-center pt-16">
       {/* Background with Overlay */}
