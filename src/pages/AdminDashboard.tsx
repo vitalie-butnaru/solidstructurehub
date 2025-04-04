@@ -5,7 +5,7 @@ import { useSite } from "@/contexts/SiteContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { LogOut, Home, PanelRight, Globe, Settings } from "lucide-react";
+import { LogOut, Home, PanelRight, Globe, Settings, RefreshCw } from "lucide-react";
 import HeroEditor from "@/components/admin/HeroEditor";
 import ServicesEditor from "@/components/admin/ServicesEditor";
 import WhyChooseUsEditor from "@/components/admin/WhyChooseUsEditor";
@@ -58,6 +58,23 @@ const AdminDashboard = () => {
     window.open(`/?lang=${lang}`, "_blank");
   };
 
+  const clearCache = () => {
+    // Force refresh of localStorage data by reapplying the latest site data
+    const latestData = JSON.parse(JSON.stringify(siteData));
+    updateSiteData(latestData);
+    
+    // Clear any browser cache
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        names.forEach(name => {
+          caches.delete(name);
+        });
+      });
+    }
+    
+    toast.success("Cache-ul a fost curățat cu succes!");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -67,7 +84,19 @@ const AdminDashboard = () => {
             <PanelRight className="h-6 w-6 text-construction-accent mr-2" />
             <h1 className="text-xl font-bold text-construction-900">Panel Administrare</h1>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            {/* Clear Cache Button */}
+            <Button 
+              variant="outline" 
+              size={isMobile ? "icon" : "sm"}
+              onClick={clearCache}
+              title="Curăță cache"
+              className="flex items-center"
+            >
+              <RefreshCw className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
+              {!isMobile && "Curăță cache"}
+            </Button>
+            
             {isMobile ? (
               <Sheet>
                 <SheetTrigger asChild>

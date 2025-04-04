@@ -12,38 +12,43 @@ interface HeroSectionProps {
 const HeroSection = ({ data }: HeroSectionProps) => {
   const [searchParams] = useSearchParams();
   const lang = searchParams.get("lang") || "ro";
-  const [currentBackground, setCurrentBackground] = useState(data.backgroundImage);
+  const [currentBackground, setCurrentBackground] = useState<string | undefined>(data.backgroundImage);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [backgrounds, setBackgrounds] = useState([
-    data.backgroundImage,
-    ...data.additionalImages
-  ]);
+  const [backgrounds, setBackgrounds] = useState<string[]>([]);
   
-  // Update backgrounds when data changes
+  // Update backgrounds when data changes with validation
   useEffect(() => {
+    console.log("Hero data updated:", data);
+    
     const validImages = [
       data.backgroundImage,
       ...(data.additionalImages || [])
-    ].filter(Boolean);
+    ].filter(Boolean) as string[];
+    
+    console.log("Valid images:", validImages);
     
     setBackgrounds(validImages);
     
     // Reset current background to the new one from data
-    if (data.backgroundImage) {
-      setCurrentBackground(data.backgroundImage);
+    if (validImages.length > 0) {
+      setCurrentBackground(validImages[0]);
     }
   }, [data]);
 
   // Background image rotation
   useEffect(() => {
-    if (backgrounds.length <= 1) return;
+    if (!backgrounds || backgrounds.length <= 1) return;
     
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
-        const currentIndex = backgrounds.indexOf(currentBackground);
-        const nextIndex = (currentIndex + 1) % backgrounds.length;
-        setCurrentBackground(backgrounds[nextIndex]);
+        if (!currentBackground || backgrounds.length === 0) {
+          setCurrentBackground(backgrounds[0]);
+        } else {
+          const currentIndex = backgrounds.indexOf(currentBackground);
+          const nextIndex = (currentIndex + 1) % backgrounds.length;
+          setCurrentBackground(backgrounds[nextIndex]);
+        }
         setIsTransitioning(false);
       }, 500);
     }, 7000);
@@ -93,7 +98,7 @@ const HeroSection = ({ data }: HeroSectionProps) => {
           <div className="flex justify-center mt-8 opacity-0 animate-fade-in animate-delay-500">
             <button 
               onClick={scrollToServices}
-              className="px-8 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-construction-accent/20 flex items-center gap-3"
+              className="px-8 py-3 rounded-lg bg-construction-accent text-white font-medium hover:bg-construction-accent/90 transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-construction-accent/20 flex items-center gap-2"
             >
               {getLocalizedContent(data.ctaText, lang)}
               <ArrowDown className="animate-float h-5 w-5" />
