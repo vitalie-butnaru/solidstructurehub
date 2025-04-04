@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types for multilingual content
@@ -290,9 +289,9 @@ const initialSiteData: SiteData = {
         ru: '0690 14 027'
       },
       email: {
-        ro: 'Latid.serv@gmail.com',
-        en: 'Latid.serv@gmail.com',
-        ru: 'Latid.serv@gmail.com'
+        ro: 'latid.srl@gmail.com',
+        en: 'latid.srl@gmail.com',
+        ru: 'latid.srl@gmail.com'
       }
     },
     schedule: {

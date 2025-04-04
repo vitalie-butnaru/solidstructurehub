@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSite } from "@/contexts/SiteContext";
@@ -40,6 +39,8 @@ const AdminDashboard = () => {
   const [previewLang, setPreviewLang] = useState("ro");
   const isMobile = useIsMobile();
   const [isUploading, setIsUploading] = useState(false);
+  
+  const fileInputRef = useState<HTMLInputElement | null>(null);
 
   const handleLogout = () => {
     logout();
@@ -61,11 +62,9 @@ const AdminDashboard = () => {
   };
 
   const clearCache = () => {
-    // Force refresh of localStorage data by reapplying the latest site data
     const latestData = JSON.parse(JSON.stringify(siteData));
     updateSiteData(latestData);
     
-    // Clear any browser cache
     if ('caches' in window) {
       caches.keys().then((names) => {
         names.forEach(name => {
@@ -91,8 +90,17 @@ const AdminDashboard = () => {
     toast.success("Configurația site-ului a fost exportată cu succes!");
   };
 
-  const importSiteData = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const triggerFileUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e: Event) => importSiteData(e);
+    input.click();
+  };
+
+  const importSiteData = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
@@ -103,19 +111,25 @@ const AdminDashboard = () => {
         const importedData = JSON.parse(event.target?.result as string);
         updateSiteData(importedData);
         toast.success("Configurația site-ului a fost importată cu succes!");
+        
+        if ('caches' in window) {
+          caches.keys().then((names) => {
+            names.forEach(name => {
+              caches.delete(name);
+            });
+          });
+        }
       } catch (error) {
         console.error("Error importing site data:", error);
         toast.error("Eroare la importarea configurației. Verificați formatul fișierului.");
       } finally {
         setIsUploading(false);
-        e.target.value = '';
       }
     };
     
     reader.onerror = () => {
       toast.error("Eroare la citirea fișierului.");
       setIsUploading(false);
-      e.target.value = '';
     };
     
     reader.readAsText(file);
@@ -142,26 +156,17 @@ const AdminDashboard = () => {
                 {!isMobile && "Exportă"}
               </Button>
               
-              <div className="relative">
-                <input
-                  type="file"
-                  id="config-import"
-                  accept=".json"
-                  onChange={importSiteData}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  disabled={isUploading}
-                />
-                <Button 
-                  variant="outline" 
-                  size={isMobile ? "icon" : "sm"}
-                  disabled={isUploading}
-                  title="Importă configurația"
-                  className="flex items-center relative"
-                >
-                  <Upload className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
-                  {!isMobile && "Importă"}
-                </Button>
-              </div>
+              <Button 
+                variant="outline" 
+                size={isMobile ? "icon" : "sm"}
+                onClick={triggerFileUpload}
+                disabled={isUploading}
+                title="Importă configurația"
+                className="flex items-center"
+              >
+                <Upload className={`h-4 w-4 ${isMobile ? "" : "mr-2"}`} />
+                {!isMobile && "Importă"}
+              </Button>
               
               <Button 
                 variant="outline" 
