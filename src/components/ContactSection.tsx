@@ -18,6 +18,7 @@ const ContactSection = ({ data }: ContactSectionProps) => {
     phone: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [searchParams] = useSearchParams();
   const lang = searchParams.get("lang") || "ro";
@@ -41,25 +42,31 @@ const ContactSection = ({ data }: ContactSectionProps) => {
       });
       return;
     }
+
+    setIsSubmitting(true);
     
-    // Here you would normally send the data to your backend
-    console.log("Form data submitted:", formData);
+    // The form will be submitted to formsubmit.co service
+    // The actual submission is handled by the form's action attribute
+    // We'll still show a UI feedback for better UX
     
-    // Show success message
-    toast({
-      title: lang === "ro" ? "Mesaj trimis" : lang === "en" ? "Message sent" : "Сообщение отправлено",
-      description: lang === "ro" ? "Vă mulțumim! Vă vom contacta în curând." :
-                   lang === "en" ? "Thank you! We will contact you soon." :
-                   "Спасибо! Мы свяжемся с вами в ближайшее время.",
-    });
-    
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-    });
+    setTimeout(() => {
+      setIsSubmitting(false);
+      
+      // Reset form after submission
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
+      
+      toast({
+        title: lang === "ro" ? "Mesaj trimis" : lang === "en" ? "Message sent" : "Сообщение отправлено",
+        description: lang === "ro" ? "Vă mulțumim! Vă vom contacta în curând." :
+                     lang === "en" ? "Thank you! We will contact you soon." :
+                     "Спасибо! Мы свяжемся с вами в ближайшее время.",
+      });
+    }, 1000); // Show loading state for a second for better UX
   };
 
   const scrollToForm = () => {
@@ -97,7 +104,18 @@ const ContactSection = ({ data }: ContactSectionProps) => {
                "Отправьте нам сообщение"}
             </h3>
             
-            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+            <form 
+              ref={formRef} 
+              onSubmit={handleSubmit} 
+              className="space-y-6"
+              action="https://formsubmit.co/latid.srl@gmail.com" 
+              method="POST"
+            >
+              {/* FormSubmit configuration */}
+              <input type="hidden" name="_subject" value="Mesaj nou de pe site" />
+              <input type="hidden" name="_next" value={window.location.href} />
+              <input type="text" name="_honey" style={{ display: 'none' }} /> {/* Spam prevention */}
+              
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-construction-700 mb-1">
                   {lang === "ro" ? "Nume complet *" : 
@@ -167,11 +185,17 @@ const ContactSection = ({ data }: ContactSectionProps) => {
               
               <button
                 type="submit"
-                className="w-full py-3 px-6 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors"
+                className="w-full py-3 px-6 bg-construction-accent text-white rounded-lg hover:bg-construction-accent/90 transition-colors disabled:opacity-70"
+                disabled={isSubmitting}
               >
-                {lang === "ro" ? "Trimite mesajul" : 
-                 lang === "en" ? "Send message" : 
-                 "Отправить сообщение"}
+                {isSubmitting ? 
+                  (lang === "ro" ? "Se trimite..." : 
+                   lang === "en" ? "Sending..." : 
+                   "Отправка...") :
+                  (lang === "ro" ? "Trimite mesajul" : 
+                   lang === "en" ? "Send message" : 
+                   "Отправить сообщение")
+                }
               </button>
               
               <p className="text-sm text-construction-500 mt-2">

@@ -21,17 +21,23 @@ const HeroSection = ({ data }: HeroSectionProps) => {
   
   // Update backgrounds when data changes
   useEffect(() => {
-    setBackgrounds([
+    const validImages = [
       data.backgroundImage,
-      ...data.additionalImages
-    ]);
+      ...(data.additionalImages || [])
+    ].filter(Boolean);
+    
+    setBackgrounds(validImages);
     
     // Reset current background to the new one from data
-    setCurrentBackground(data.backgroundImage);
-  }, [data.backgroundImage, data.additionalImages]);
+    if (data.backgroundImage) {
+      setCurrentBackground(data.backgroundImage);
+    }
+  }, [data]);
 
   // Background image rotation
   useEffect(() => {
+    if (backgrounds.length <= 1) return;
+    
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -56,13 +62,15 @@ const HeroSection = ({ data }: HeroSectionProps) => {
     <section className="relative min-h-screen w-full flex items-center justify-center pt-16">
       {/* Background with Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-construction-900/90 to-construction-800/90 z-0">
-        <div 
-          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${isTransitioning ? 'opacity-0' : 'opacity-40'} mix-blend-overlay`}
-          style={{ 
-            backgroundImage: `url('${currentBackground}')`,
-            backgroundPosition: '50% 30%' 
-          }}
-        ></div>
+        {currentBackground && (
+          <div 
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${isTransitioning ? 'opacity-0' : 'opacity-40'} mix-blend-overlay`}
+            style={{ 
+              backgroundImage: `url('${currentBackground}')`,
+              backgroundPosition: '50% 30%' 
+            }}
+          ></div>
+        )}
       </div>
 
       {/* Content */}
